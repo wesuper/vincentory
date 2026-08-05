@@ -1,0 +1,19 @@
+{
+  "name": "vincentory",
+  "version": "0.1.0",
+  "description": "A curated collection of reusable agent skills for engineering and productivity workflows.",
+  "author": {
+    "name": "vincentruan"
+  },
+  "repository": "https://github.com/wesuper/vincentory",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "agent-skills",
+    "engineering",
+    "productivity"
+  ],
+  "skills": [
+    "./skills/engineering/create-skill"
+  ]
+}

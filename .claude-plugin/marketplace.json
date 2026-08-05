@@ -1,0 +1,21 @@
+{
+  "name": "vincentory",
+  "owner": {
+    "name": "vincentruan"
+  },
+  "description": "The official marketplace for the vincentory agent skills collection.",
+  "plugins": [
+    {
+      "name": "vincentory",
+      "source": "./",
+      "description": "Reusable agent skills for disciplined engineering and productivity workflows.",
+      "category": "engineering",
+      "keywords": [
+        "engineering",
+        "productivity",
+        "agent-skills",
+        "claude-code"
+      ]
+    }
+  ]
+}

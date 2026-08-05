@@ -1,0 +1,14 @@
+{
+  "name": "vincentory",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A curated collection of reusable agent skills.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:wesuper/vincentory.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "validate": "claude plugin validate . --strict"
+  }
+}
