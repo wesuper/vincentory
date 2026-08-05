@@ -59,7 +59,7 @@ Invoke a skill via the `/vincentory:` prefix:
 
 ### Productivity
 
-_No published productivity skills yet._
+- [h5-report-generator](skills/productivity/h5-report-generator/SKILL.md) — 企业级 HTML5 幻灯片演示系统生成器。当用户需要生成汇报材料、H5 演示文稿、网页版幻灯片，或明确要求"H5格式"、"网页版PPT"时使用。支持多主题模板、ECharts/Mermaid 图表、响应式布局，10-30 页幻灯片。
 
 ## Local development
 

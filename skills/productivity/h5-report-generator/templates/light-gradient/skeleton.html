@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITLE}}</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="presentation">
+
+        <!-- 封面页 -->
+        <section class="slide active" id="slide-cover">
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 80vh;">
+                <h1 style="font-size: 56px; font-weight: 700; color: var(--primary-blue); text-align: center; margin-bottom: 20px;">
+                    {{PRESENTATION_TITLE}}
+                </h1>
+            </div>
+            <div style="position: absolute; bottom: 60px; left: 60px; font-size: 16px; color: #555; line-height: 1.8;">
+                <p>汇报人：{{DEPARTMENT}}</p>
+                <p>日期：{{DATE}}</p>
+            </div>
+        </section>
+
+        <!-- 在此追加更多页面：
+            <section class="slide" id="slide-xxx"> ... </section>
+        -->
+
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">←</button>
+        <span class="page-indicator"><span id="currentPage">1</span> / <span id="totalPages">1</span></span>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">→</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

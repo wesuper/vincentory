@@ -1,0 +1,293 @@
+{
+  "title": "多章节汇报材料模板",
+  "subtitle": "支持3-5个章节的企业级汇报",
+  "department": "技术部",
+  "date": "2026年1月",
+  "chapters": [
+    {
+      "id": "chapter1",
+      "name": "第一章：现状分析",
+      "description": "业务现状与问题分析"
+    },
+    {
+      "id": "chapter2",
+      "name": "第二章：解决方案",
+      "description": "技术方案与设计思路"
+    },
+    {
+      "id": "chapter3",
+      "name": "第三章：预期收益",
+      "description": "投入产出分析与效益评估"
+    },
+    {
+      "id": "chapter4",
+      "name": "第四章：实施计划",
+      "description": "项目实施路线图与里程碑"
+    },
+    {
+      "id": "chapter5",
+      "name": "第五章：风险应对",
+      "description": "风险识别与应对措施"
+    }
+  ],
+  "slides": [
+    "slide-cover",
+    "slide-toc1",
+    "slide-current-status",
+    "slide-problems",
+    "slide-solution",
+    "slide-tech-architecture",
+    "slide-benefits",
+    "slide-roi-analysis",
+    "slide-toc2",
+    "slide-implementation-plan",
+    "slide-milestones",
+    "slide-toc3",
+    "slide-risks",
+    "slide-mitigation",
+    "slide-qa",
+    "slide-appendix"
+  ],
+  "slides_data": {
+    "slide-current-status": {
+      "title": "业务现状分析",
+      "subtitle": "当前业务运行情况",
+      "metrics": [
+        { "label": "日均业务量", "value": "10万笔", "trend": "+15%" },
+        { "label": "系统稳定性", "value": "99.5%", "trend": "-0.3%" },
+        { "label": "用户满意度", "value": "85%", "trend": "+5%" },
+        { "label": "处理效率", "value": "85秒", "trend": "-10秒" }
+      ]
+    },
+    "slide-problems": {
+      "title": "存在问题与挑战",
+      "subtitle": "当前面临的主要问题",
+      "problems": [
+        {
+          "title": "系统性能瓶颈",
+          "description": "高峰期响应时间超过3秒",
+          "severity": "高"
+        },
+        {
+          "title": "运维成本高",
+          "description": "人工运维工作量大",
+          "severity": "中"
+        },
+        {
+          "title": "数据孤岛",
+          "description": "各系统间数据未打通",
+          "severity": "高"
+        }
+      ]
+    },
+    "slide-solution": {
+      "title": "综合解决方案",
+      "subtitle": "解决现有问题的技术方案",
+      "approach": "微服务架构 + 云原生 + 自动化运维",
+      "components": [
+        {
+          "name": "微服务化改造",
+          "description": "将单体应用拆分为独立微服务",
+          "benefit": "提升系统弹性与可维护性"
+        },
+        {
+          "name": "容器化部署",
+          "description": "采用Docker + Kubernetes部署",
+          "benefit": "提高资源利用率和部署效率"
+        },
+        {
+          "name": "数据中台建设",
+          "description": "打通各系统数据，统一数据服务",
+          "benefit": "消除数据孤岛，提升数据价值"
+        }
+      ]
+    },
+    "slide-tech-architecture": {
+      "title": "技术架构设计",
+      "subtitle": "系统整体架构与关键技术",
+      "diagram": "mermaid-architecture",
+      "layers": [
+        {
+          "name": "接入层",
+          "tech": "Nginx + LVS",
+          "description": "负载均衡与流量分发"
+        },
+        {
+          "name": "网关层",
+          "tech": "Spring Cloud Gateway",
+          "description": "统一API网关与服务治理"
+        },
+        {
+          "name": "业务层",
+          "tech": "Spring Boot + MyBatis",
+          "description": "微服务业务逻辑实现"
+        },
+        {
+          "name": "数据层",
+          "tech": "MySQL + Redis + MongoDB",
+          "description": "多数据源存储方案"
+        }
+      ]
+    },
+    "slide-benefits": {
+      "title": "预期收益分析",
+      "subtitle": "项目实施后带来的价值",
+      "benefits": [
+        {
+          "title": "性能提升",
+          "before": "响应时间3秒",
+          "after": "响应时间1秒",
+          "improvement": "66%"
+        },
+        {
+          "title": "成本降低",
+          "before": "运维成本100万/年",
+          "after": "运维成本60万/年",
+          "improvement": "40%"
+        },
+        {
+          "title": "效率提升",
+          "before": "日均处理10万笔",
+          "after": "日均处理15万笔",
+          "improvement": "50%"
+        }
+      ]
+    },
+    "slide-roi-analysis": {
+      "title": "ROI投入产出分析",
+      "subtitle": "成本效益详细分析",
+      "investment": {
+        "development": 200,
+        "infrastructure": 150,
+        "training": 50,
+        "total": 400
+      },
+      "returns": {
+        "year1": 150,
+        "year2": 300,
+        "year3": 400,
+        "total": 850
+      },
+      "roi": "112%",
+      "payback_period": "2.5年"
+    },
+    "slide-implementation-plan": {
+      "title": "实施计划与路线图",
+      "subtitle": "分阶段推进，稳步实施",
+      "phases": [
+        {
+          "phase": "第一阶段",
+          "duration": "3个月",
+          "tasks": ["需求调研", "架构设计", "团队组建"],
+          "deliverables": ["技术方案", "项目计划", "资源配置"]
+        },
+        {
+          "phase": "第二阶段",
+          "duration": "6个月",
+          "tasks": ["核心系统开发", "接口对接", "单元测试"],
+          "deliverables": ["核心功能", "测试报告", "部署方案"]
+        },
+        {
+          "phase": "第三阶段",
+          "duration": "3个月",
+          "tasks": ["系统集成", "压力测试", "试运行"],
+          "deliverables": ["系统上线", "性能报告", "运维手册"]
+        }
+      ]
+    },
+    "slide-milestones": {
+      "title": "关键里程碑",
+      "subtitle": "项目实施的关键节点",
+      "milestones": [
+        { "date": "2026-Q1", "name": "方案设计完成", "status": "已规划" },
+        { "date": "2026-Q2", "name": "核心功能开发", "status": "待开始" },
+        { "date": "2026-Q3", "name": "系统集成测试", "status": "待开始" },
+        { "date": "2026-Q4", "name": "正式上线", "status": "待开始" }
+      ]
+    },
+    "slide-risks": {
+      "title": "风险识别与评估",
+      "subtitle": "项目潜在风险点分析",
+      "risks": [
+        {
+          "name": "技术风险",
+          "description": "新技术栈团队学习曲线陡峭",
+          "probability": "中",
+          "impact": "中",
+          "level": "中等"
+        },
+        {
+          "name": "进度风险",
+          "description": "开发周期紧张，可能延期",
+          "probability": "高",
+          "impact": "高",
+          "level": "高"
+        },
+        {
+          "name": "人员风险",
+          "description": "关键人员离职导致项目延期",
+          "probability": "中",
+          "impact": "高",
+          "level": "高"
+        }
+      ]
+    },
+    "slide-mitigation": {
+      "title": "风险应对措施",
+      "subtitle": "针对识别的风险制定应对策略",
+      "measures": [
+        {
+          "risk": "技术风险",
+          "actions": [
+            "提前组织技术培训和预研",
+            "引入外部技术专家顾问",
+            "制定详细的技术方案和文档"
+          ]
+        },
+        {
+          "risk": "进度风险",
+          "actions": [
+            "合理安排开发周期，预留缓冲时间",
+            "采用敏捷开发模式，快速迭代",
+            "建立项目周报制度，及时发现问题"
+          ]
+        },
+        {
+          "risk": "人员风险",
+          "actions": [
+            "关键岗位双人配置",
+            "完善知识管理和文档体系",
+            "建立人才储备和激励机制"
+          ]
+        }
+      ]
+    },
+    "slide-qa": {
+      "title": "Q&A 问答环节",
+      "subtitle": "欢迎提问交流",
+      "questions": [
+        "项目实施过程中如何保证业务连续性？",
+        "系统升级对现有业务会有影响吗？",
+        "如何评估项目实施效果？"
+      ]
+    },
+    "slide-appendix": {
+      "title": "附录",
+      "subtitle": "参考资料与详细说明",
+      "sections": [
+        {
+          "title": "技术选型对比",
+          "content": "详细的技术方案对比分析"
+        },
+        {
+          "title": "竞品分析",
+          "content": "行业同类产品功能对比"
+        },
+        {
+          "title": "实施细节",
+          "content": "具体实施步骤与操作指南"
+        }
+      ]
+    }
+  }
+}

@@ -6,4 +6,4 @@ Skills under active development or experimentation.
 
 ## Current Skills
 
-_No skills in progress yet._
+_No in-progress skills at the moment._
