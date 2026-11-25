@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-H5汇报材料生成器脚本
-根据配置自动生成HTML幻灯片演示文稿
+H5汇报材料生成器脚本（旧版 · v4 兼容，仅作参考）
+
+⚠️ 已与 v5 模板脱节，不要在本技能主流程中使用：
+   - 它写死旧占位符（CHAPTER1_NAME 等），不识别 {{COVER_CHIPS}} / {{TOC_CELLS}} / {{PAGES}}
+   - 它输出 slideOrder 数组，而 v5 脚本按 DOM 顺序翻页
+   - 它不生成顶部进度条、目录结论卡、结论条
+
+v5 正确做法：按 SKILL.md 的 Step 1/2 手工装配 skeleton.html + style.css + script.js。
+本文件保留用于理解历史产物或二次开发。
 """
 
 import os

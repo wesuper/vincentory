@@ -1,43 +1,101 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{TITLE}}</title>
+
+    <!-- 可选图表依赖：内网环境加载失败不影响翻页（脚本内有 typeof 保护） -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+
+    <!-- 主题样式（装配时内联到这里） -->
+    <style>
+        /* === STYLE_CSS === */
+    </style>
 </head>
+
 <body>
+    <!-- 顶部进度指示条：随翻页增长 -->
+    <div class="progress-bar"></div>
+
+    <!-- 幻灯片容器：页面顺序 = DOM 顺序 -->
     <div class="presentation">
 
-        <!-- 封面页 -->
+        <!-- P1 封面 -->
         <section class="slide active" id="slide-cover">
-            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 80vh;">
-                <h1 style="font-size: 56px; font-weight: 700; color: var(--primary-blue); text-align: center; margin-bottom: 20px;">
-                    {{PRESENTATION_TITLE}}
-                </h1>
-            </div>
-            <div style="position: absolute; bottom: 60px; left: 60px; font-size: 16px; color: #555; line-height: 1.8;">
-                <p>汇报人：{{DEPARTMENT}}</p>
-                <p>日期：{{DATE}}</p>
+            <div class="cover-page">
+                <div class="cover-decoration">
+                    <div class="deco-circle deco-circle-1"></div>
+                    <div class="deco-circle deco-circle-2"></div>
+                    <div class="deco-circle deco-circle-3"></div>
+                    <div class="deco-line deco-line-1"></div>
+                    <div class="deco-line deco-line-2"></div>
+                </div>
+                <div class="cover-badge">{{BADGE}}</div>
+                <h1 class="cover-title">{{PRESENTATION_TITLE}}</h1>
+                <p class="cover-subtitle">{{SUBTITLE}}</p>
+                <div class="cover-info">
+                    <div class="cover-info-item"><span class="ci-k">日期</span> {{DATE}}</div>
+                    <div class="cover-info-item"><span class="ci-k">汇报人</span> {{AUTHOR}}</div>
+                    <div class="cover-info-item"><span class="ci-k">科室</span> {{DEPARTMENT}}</div>
+                </div>
+                <!-- 结论先行：3 条以内核心结论胶囊，管理层 3 秒抓住重点 -->
+                <div class="cover-chips">
+                    {{COVER_CHIPS}}
+                </div>
+                <div class="cover-hint">← / → 方向键翻页</div>
             </div>
         </section>
 
-        <!-- 在此追加更多页面：
-            <section class="slide" id="slide-xxx"> ... </section>
-        -->
+        <!-- P2 目录：每章一句结论 + 2–3 条要点 -->
+        <section class="slide" id="slide-toc">
+            <div class="toc-page">
+                <div class="toc-header">
+                    <div class="toc-icon">📋</div>
+                    <div>
+                        <div class="toc-title">目录</div>
+                        <div class="toc-subtitle">CONTENTS · {{TOC_TAGLINE}}</div>
+                    </div>
+                </div>
+                <div class="toc-stack">
+                    {{TOC_CELLS}}
+                </div>
+            </div>
+        </section>
+
+        <!-- {{PAGES}}：按 page-templates.md 的三段式写入内容页，每页 id 唯一 -->
+        {{PAGES}}
+
+        <!-- 收尾页 -->
+        <section class="slide" id="slide-end">
+            <div class="qa-page">
+                <div class="qa-decoration">
+                    <div class="qa-circle qa-circle-1"></div>
+                    <div class="qa-circle qa-circle-2"></div>
+                </div>
+                <div class="qa-icon">{{END_ICON}}</div>
+                <div class="close-lines">
+                    {{CLOSE_LINES}}
+                </div>
+                <div class="close-thanks">谢 谢 · 恳 请 指 正</div>
+            </div>
+        </section>
 
     </div>
 
-    <!-- Navigation Controls -->
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">←</button>
-        <span class="page-indicator"><span id="currentPage">1</span> / <span id="totalPages">1</span></span>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">→</button>
+    <!-- 导航：右下胶囊 + 页码 -->
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" data-action="prev" aria-label="上一页">◀</button>
+        <span class="page-indicator"><span id="currentPage">1</span> / <span class="total" id="totalPages">1</span></span>
+        <button class="nav-btn" id="nextBtn" data-action="next" aria-label="下一页">▶</button>
     </div>
 
-    <script src="script.js"></script>
+    <!-- 交互脚本（装配时内联到这里） -->
+    <script>
+        /* === SCRIPT_JS === */
+    </script>
 </body>
+
 </html>

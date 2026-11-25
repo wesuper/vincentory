@@ -6,3 +6,5 @@ node_modules/
 *.log
 .omc/
 output/
+
+__pycache__/
