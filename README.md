@@ -8,7 +8,7 @@ A curated collection of reusable agent skills for engineering and productivity w
 
 - **Small and focused**: each skill does one thing well.
 - **Composable**: skills can be combined without hidden dependencies.
-- **Maintainable**: clear bucket boundaries, synchronized manifests, and explicit publishing rules.
+- **Maintainable**: one flat directory per skill, synchronized manifests, and explicit publishing rules.
 - **Safe by default**: no destructive operations, no secret leakage, no guessing user intent.
 
 ## Installation
@@ -39,27 +39,16 @@ A curated collection of reusable agent skills for engineering and productivity w
 Invoke a skill via the `/vincentory:` prefix:
 
 ```text
-/vincentory:create-skill my-new-skill engineering
+/vincentory:h5-report-generator
 ```
 
-## Skill categories
+## Structure
 
-| Bucket | Status |
-|---|---|
-| [engineering](skills/engineering/README.md) | Published |
-| [productivity](skills/productivity/README.md) | Published |
-| [in-progress](skills/in-progress/README.md) | Not published |
-| [deprecated](skills/deprecated/README.md) | Not published |
+Every skill lives directly under `skills/` as `skills/<skill-name>/SKILL.md` — the layout Claude Code auto-discovers, with no intermediate category level. Anything under `skills/` ships with the plugin, so work-in-progress skills belong outside this repository (or in a branch), not in an unpublished subdirectory.
 
 ## Published skills
 
-### Engineering
-
-- [create-skill](skills/engineering/create-skill/SKILL.md) — Create or update a skill in the vincentory repository while keeping manifests and documentation synchronized.
-
-### Productivity
-
-- [h5-report-generator](skills/productivity/h5-report-generator/SKILL.md) — 企业级 HTML5 幻灯片演示系统生成器。当用户需要生成汇报材料、H5 演示文稿、网页版幻灯片，或明确要求"H5格式"、"网页版PPT"时使用。结论先行信息架构（封面结论胶囊、目录每章结论+要点、页面结论条）、顶部进度条、ECharts/Mermaid 图表、PC 端投屏优化，5-30 页幻灯片。
+- [h5-report-generator](skills/h5-report-generator/SKILL.md) — 企业级 HTML5 幻灯片演示系统生成器。当用户需要生成汇报材料、H5 演示文稿、网页版幻灯片，或明确要求"H5格式"、"网页版PPT"时使用。结论先行信息架构（封面结论胶囊、目录每章结论+要点、页面结论条）、顶部进度条、ECharts/Mermaid 图表、PC 端投屏优化，5-30 页幻灯片。
 
 ## Local development
 
@@ -73,23 +62,15 @@ Symlink published skills into `~/.claude/skills/` so they are available outside 
 
 ### Edit skills directly
 
-Skills live at `skills/<bucket>/<skill-name>/SKILL.md`. Edit the file, then re-run validation if the change affects a published skill.
+Skills live at `skills/<skill-name>/SKILL.md`. Edit the file, then re-run validation.
 
 ## Creating a new skill
 
-Use the `create-skill` skill itself:
+Use the built-in `skill-creator` skill to scaffold and iterate on a new skill, then wire it into this repository:
 
-```text
-/vincentory:create-skill my-new-skill engineering
-```
-
-Or manually:
-
-1. Create `skills/<bucket>/<skill-name>/SKILL.md` with valid frontmatter.
-2. Update the bucket `README.md`.
-3. If the bucket is `engineering` or `productivity`:
-   - Add the path to `.claude-plugin/plugin.json`'s `skills` array.
-   - Add the skill to the root `README.md` published skills list.
+1. Create `skills/<skill-name>/SKILL.md` with valid frontmatter (directory name must equal `name`).
+2. Add the path to `.claude-plugin/plugin.json`'s `skills` array.
+3. Add the skill to the published skills list above.
 4. Run validation (see below).
 
 ## Plugin validation

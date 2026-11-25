@@ -14,7 +14,6 @@
     "productivity"
   ],
   "skills": [
-    "./skills/engineering/create-skill",
-    "./skills/productivity/h5-report-generator"
+    "./skills/h5-report-generator"
   ]
 }

@@ -10,27 +10,26 @@
 
 The repository root is the plugin root. Do not create nested plugin directories.
 
-## Skill buckets
+## Directory layout
 
-| Bucket | Meaning | Published to plugin |
-|---|---|---|
-| `skills/engineering/` | Day-to-day software engineering skills | Yes |
-| `skills/productivity/` | General workflow and productivity skills | Yes |
-| `skills/in-progress/` | Work in progress, experiments | No |
-| `skills/deprecated/` | Retired, no longer maintained | No |
+```text
+skills/
+└── <skill-name>/
+    └── SKILL.md
+```
+
+Each skill sits **directly** under `skills/`, one directory per skill. There is no category layer: `skills/engineering/foo/` is not a Claude Code concept and must not be reintroduced.
+
+**Why:** Claude Code auto-discovers `skills/<name>/SKILL.md` at exactly one level. Nested skills are only loaded when their path is listed in `plugin.json`, and an omission there fails silently — the skill simply never appears. A flat namespace also matches every official plugin (`superpowers`, `claude-md-management`, …), whose manifests carry no `skills` field at all.
+
+> A category layer is not a valid "not published" mechanism either. Everything under `skills/` ships with the plugin, whether or not it is listed in `plugin.json`. Work-in-progress skills belong outside this repository or on a branch.
 
 ## Publishing invariants
 
-For every skill in `engineering` or `productivity` (published buckets), all three must hold:
+For every skill in `skills/`, both must hold:
 
-1. The skill is listed in the corresponding bucket's `README.md`
-2. The skill is listed in the root `README.md` published skills list
-3. The skill path is present in the `skills` array of `.claude-plugin/plugin.json`
-
-For every skill in `in-progress` or `deprecated`:
-
-- It must NOT appear in `.claude-plugin/plugin.json`'s `skills` array
-- It must NOT appear in the root `README.md` published skills list
+1. The skill is listed in the root `README.md` published skills list
+2. The skill path is present in the `skills` array of `.claude-plugin/plugin.json`
 
 Violating these invariants is a bug. The validation step should catch it.
 
@@ -42,16 +41,16 @@ Violating these invariants is a bug. The validation step should catch it.
 - `description` must describe both the trigger situation and the specific capability.
 - Skills must declare whether they are user-invoked (`disable-model-invocation: true`) or model-invoked. If unset, the model may invoke the skill automatically.
 - Skills should be small, focused, composable, and independently testable.
+- Use the built-in `skill-creator` skill for authoring; do not ship a repository-local skill whose only job is to create other skills.
 - Do not write secrets, tokens, API keys, emails, or environment-specific values into any skill file.
 - Do not execute destructive operations unless the user has explicitly authorized them.
 
 ## Manifest synchronization
 
-When adding, moving, renaming, or deleting a published skill, update all three of:
+When adding, moving, renaming, or deleting a skill, update both of:
 
 - `.claude-plugin/plugin.json` (`skills` array)
 - Root `README.md` (published skills list)
-- The corresponding bucket's `README.md`
 
 When changing the version, update all three of:
 
@@ -68,3 +67,5 @@ claude plugin validate . --strict
 ```
 
 If the `claude` CLI is unavailable or the command is unsupported in the installed version, record the reason and the raw error. Do not fabricate a success result.
+
+> `claude plugin validate` checks that every path in the `skills` array exists, but it does **not** validate the frontmatter of skills reached through that path. Check `name`/`description` by reading the file.

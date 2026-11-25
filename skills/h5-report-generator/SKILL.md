@@ -14,7 +14,7 @@ description: 用户需要生成汇报材料、H5演示文稿、网页版幻灯�
 ## 文件结构
 
 ```
-skills/productivity/h5-report-generator/
+skills/h5-report-generator/
 ├── SKILL.md                    # 本文件：工作流程与规范
 ├── templates/
 │   ├── README.md               # 模板说明与扩展指南

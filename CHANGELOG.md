@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `skills/` 扁平化：`skills/productivity/h5-report-generator` → `skills/h5-report-generator`。删除 `engineering/` / `productivity/` / `in-progress/` / `deprecated/` 分类层——Claude Code 只自动发现一层深度，嵌套 skill 必须靠 `plugin.json` 声明且漏声明会静默失效；分类层也无法起到"不发布"作用，`skills/` 下的一切都会随插件发布。
+- `scripts/link-skills.sh` 改为遍历 `skills/*/`；`README.md` / `CLAUDE.md` 的目录约定与发布不变量同步改为单层结构。
+
+### Removed
+
+- 删除 `create-skill` skill：原生 `skill-creator` 已覆盖 skill 创作流程，仓库内版本的价值仅剩 manifest 同步，而这属于校验环节的职责。
+
 ## [0.2.0] - 2026-11-25
 
 ### Changed
