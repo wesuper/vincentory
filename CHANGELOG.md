@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-11-26
+
+### Added
+
+- `h5-report-generator` v7：演讲者视图补齐「可排练、可跳页、可自查、可现场改写」四项现场能力。参考 `guizang-ppt-skill` 的演讲者模式实践，按本技能的结论先行结构与 PC 投屏定位重新实现，未复制其视觉系统。
+- **宫格选页**（`G` / 点「宫格」）：问答时直接跳到任意页（「回到第 2 页那张表」）。宫格只替换预览区，右侧备注照常可见——讲者点选时往往正需要看备注判断跳哪页。
+- **排练模式**（`R`）：记录每页实际用时，结束后给出「实际 vs 计划」对比表，本地保留最近 5 次。只做数据汇总，不做评分。修复了收尾页用时丢失：原先只在上一次翻页时入账，讲者停留最久的那一页反而没记录。
+- **演前检查**：观众屏连接、弹窗权限、全屏、字体、图片、当前页 16:9、备注覆盖率七项；明确声明无法检测 HDMI / 转接线是否物理连接。
+- **现场草稿**：演讲者视图内可直接写临时提醒，按 `data-slide-id` 存入 `localStorage`，翻页不串页。草稿固定在备注滚动区之外，补一句话的入口永远在同一位置。
+- **布局三档**：均衡 / 页面优先 / 备注优先，写入本地并在下次进入时恢复。
+- **同步状态细分**：连接中 / 已同步 / 未同步 / 未连接 / 弹窗被拦截 / 已冻结。心跳超时落到「未连接」，不再永久停在「连接中」。
+- **标注同步到观众屏**：激光笔与圈选坐标归一化后随 `postMessage` 发送，观众屏用独立 `.audience-ink` 画布绘制；翻页时清空。此前标注只在讲者本机可见。
+- 底部计时改为三段：已进行 / 本页（含本页计划）/ 剩余或超时。缺 `minutes` 的页显示 `—`，不猜。
+- `scripts/validate_deck.py`：把 SKILL.md 校验清单里可机械判定的部分固化为脚本——三段式与 `lead-bar` 位置、目录逐格结论与要点、内容页编号连续、封面胶囊数量、备注条数与 `id` 对齐、必填字段、`talk` 长度、**时间预算 90% 上限**、占位符残留、重复 `id`、写死颜色。经 18 个变异测试逐项验证能捕获。
+- `scripts/theme_contrast.py`：四个主题的 WCAG AA 对比度校验（正文/次要/辅助文字 vs `--paper`/`--surface`，`--on-accent` vs `--accent-fill` 最亮档）。
+- SKILL.md 新增按汇报时长倒推页数的对照表（10/20/30/45 分钟）。
+
+### Changed
+
+- SKILL.md `description` 改为只描述触发场景，不再概述工作流（概述会让 agent 照描述行事而不读正文）。
+- 演讲者视图结构分三层：`.pr-stage`（预览 + 宫格）/ `.pr-side`（备注 + 固定草稿）/ `.pr-bottom`（计时 + 控制 + 页码），并修正 `.pr-main` 未闭合导致底栏被卷入网格布局的标签错误。
+- `content-number` 编号规则明确为「只编内容页」；新增「假设数据必须在页面上标注」的交付要求。
+- 演讲者视图的 `onSlideChange` 去掉重复 `render()` 调用。
+
+### Fixed
+
+- **四个主题共 15 项对比度不达标**：`light-gradient` 的 `--text-muted`（2.42:1）、`--ink-faint`（2.19:1）、`--warn-ink`、`--ok`、`--ok-lm`、`--warn-ink-mid`；`kraft-paper` / `dune` / `ink-classic` 的 `--ink-faint`（低至 2.89:1）、`--warn`、`--ok-lm`；三个主题的 `--on-accent` 压在 `--accent-fill` 最亮档上仅 3.48–4.11:1。调整后 78 组配对全部 ≥ 4.5:1，令牌数与分层不变。
+- **骨架 `{{PAGES}}` 占位符出现两次**（注释里又写了一遍）：按占位符全局替换会把内容页写两遍，产出重复 `id`。源码代理实测在 12 页报告里生成了 21 个 `<section>`。
+- **稀疏页居中只覆盖四类证据区**：`.mini-table` / `.risk-cards` / `.week-panel` / `.timeline` 未参与余量均分，1080p 下表格页、风险页、周节奏页仍全堆页顶、页脚空 400–500px，生成者只能自己加包装类绕过。
+- **入场动画污染溢出测量**：`.slide` 的 `fadeIn` 带 `translateY(16px)`，动画期间 `scrollHeight` 恒比 `clientHeight` 多 16px，按「每页 `scrollHeight === clientHeight`」验收会把整份 deck 误判为全页溢出。SKILL.md 补充测量时机，并新增 `prefers-reduced-motion` 下关闭入场动画。
+
+### Removed
+
+- 演讲者视图里无法生效的 `savedNote` 读取路径：只读 `localStorage` 却从未写入，现由现场草稿实际写入并回填。
+
 ## [0.3.0] - 2026-11-25
 
 ### Added

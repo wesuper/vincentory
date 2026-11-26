@@ -28,7 +28,7 @@
     --ink-rgb: 10, 10, 11;
     --text-body: #2c2b2c;
     --text-muted: #68625a;
-    --ink-faint: #8b8681;
+    --ink-faint: #706b67;
     --line: rgba(10, 10, 11, 0.12);
     --line-2: #e4e1da;
 
@@ -44,7 +44,7 @@
     --ok: #47603a;
     --ok-ink: #354a2b;
     --ok-ink-2: #3d5531;
-    --ok-lm: #657b4d;
+    --ok-lm: #5a6f43;
     --ok-bg: #e6e6cf;
 
     --font-display: "Playfair Display", "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;

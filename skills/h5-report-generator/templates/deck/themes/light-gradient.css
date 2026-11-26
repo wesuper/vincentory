@@ -15,7 +15,7 @@
     --accent-ink: #1a237e;
     --accent-ink-2: #3949ab;
     --on-accent: #ffffff;
-    --accent-fill: linear-gradient(135deg, #0066cc, #4da6ff);
+    --accent-fill: linear-gradient(135deg, #0066cc, #0a72c8);
     --glass: rgba(255, 255, 255, 0.92);
     --glass-strong: rgba(255, 255, 255, 0.95);
 
@@ -33,25 +33,25 @@
     --ink: #1a1a2e;
     --ink-rgb: 26, 26, 46;
     --text-body: #555;
-    --text-muted: #8aa0b4;
-    --ink-faint: #9aa7b4;
+    --text-muted: #577088;
+    --ink-faint: #5f7080;
     --line: rgba(0, 102, 204, 0.1);
     --line-2: #eef4fa;
 
     /* === 语义色（风险/待定/完成） === */
-    --danger: #e63946;
-    --danger-rgb: 230, 57, 70;
+    --danger: #c62828;
+    --danger-rgb: 198, 40, 40;
     --danger-ink: #c62828;
     --danger-bg: #fdecea;
     --danger-bg-soft: #fdf2f3;
-    --warn: #e65100;
-    --warn-ink: #a96a00;
-    --warn-ink-mid: #b08800;
+    --warn: #a95800;
+    --warn-ink: #8a6318;
+    --warn-ink-mid: #8a6a00;
     --warn-bg: #fff8e1;
-    --ok: #27ae60;
+    --ok: #167a42;
     --ok-ink: #1b5e20;
     --ok-ink-2: #1e8449;
-    --ok-lm: #7fa32f;
+    --ok-lm: #57771c;
     --ok-bg: #e8f5e9;
 
     /* === 字体：标题字体由主题切换（杂志主题用衬线） === */

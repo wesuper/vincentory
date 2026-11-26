@@ -82,7 +82,16 @@ python3 scripts/sync-template.py .        # 在 skill 根目录执行
 4. 漏掉任何一个皮肤令牌，该元素会掉回浏览器默认值（通常是黑色或衬线体），视觉上非常明显——逐项对照一个现有主题文件检查
 5. 在本表格和 `deck/README.md` 的主题表里登记
 
-校验一行命令够用：`for f in deck/themes/*.css; do echo "$f $(grep -c -- '^    --' $f)"; done`，四个文件应输出相同的令牌数。
+校验两件事，都在 skill 根目录跑：
+
+```bash
+for f in deck/themes/*.css; do echo "$f $(grep -c -- '^    --' $f)"; done   # 四个文件应输出相同令牌数（44）
+python3 scripts/theme_contrast.py .                                        # 对比度必须 0 项未达标
+```
+
+对比度检查的是：正文 / 次要 / 辅助文字在 `--paper` 与 `--surface` 上都 ≥ 4.5:1，
+`--on-accent` 压在最亮那档 `--accent-fill` 上也 ≥ 4.5:1。浅色主题最容易在这里失手——
+`--ink-faint` 变浅后看着「安静」，投到 1080p 投影上就是看不清，而且页面不会报任何错。
 
 ## 使用方式
 
@@ -91,4 +100,6 @@ SKILL.md 的生成流程：
 1. Step 0 读取本目录与 `deck/` 下的模板文件，确认用户主题选择（默认 `light-gradient`）
 2. Step 1 把 `style.css` + `themes/<选定主题>.css` + `script.js` 内联进 `skeleton.html`，替换占位变量（含 `{{THEME}}`）
 3. Step 2 按 `deck/page-templates.md` 的三段式逐页写入内容，每页带 `data-slide-id`
-4. Step 3 写 `SPEAKER_NOTES`（每页一条，`id` 对齐 `data-slide-id`），再跑结构与投屏校验
+4. Step 3 写 `SPEAKER_NOTES`（每页一条，`id` 对齐 `data-slide-id`）
+5. Step 4 先跑 `python3 scripts/validate_deck.py index.html --target-minutes <时长>`，
+   再按 SKILL.md 4d 在 1366×768 / 1920×1080 实测版式与演讲者视图

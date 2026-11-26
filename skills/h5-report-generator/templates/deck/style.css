@@ -93,6 +93,17 @@ strong {
     }
 }
 
+/* 省电 / 无障碍：系统要求减少动态效果时不做入场位移动画。
+ * 顺带解决一个测量陷阱——translateY(16px) 期间 scrollHeight 恒比 clientHeight
+ * 大 16px，按「每页 scrollHeight === clientHeight」验收时会整批误判为溢出。 */
+@media (prefers-reduced-motion: reduce) {
+    .slide,
+    .cover-decoration,
+    .qa-decoration {
+        animation: none !important;
+    }
+}
+
 /* === 顶部进度指示条（随翻页增长） === */
 .progress-bar {
     position: fixed;
@@ -511,13 +522,41 @@ strong {
 
 /* 稀疏页的余量上下均分，而不是全堆在页脚：
  * 证据区自然高度小于剩余空间时，上下 auto 外边距平分余量 → 视觉上居中（杂志式留白）；
- * 内容撑满或溢出时 auto 外边距自动归零，不影响密排页。 */
+ * 内容撑满或溢出时 auto 外边距自动归零，不影响密排页。
+ * 注意 .footnote 不参与均分：它应该贴在证据区下方，而不是被推到页面底部。 */
+/* 除了四宫格/指标行这类「块状」证据区，表格、风险卡、周节奏、时间轴同样会在
+ * 1080p 下堆在页顶、页脚留几百 px 空白。它们也要参与余量均分，否则只有一部分
+ * 页面类型受惠，生成者会以为模板坏了而自己加包装类。 */
 .content-body > .card-grid,
 .content-body > .stats-row,
 .content-body > .exp-grid,
-.content-body > .chain-grid {
+.content-body > .chain-grid,
+.content-body > .mini-table,
+.content-body > .risk-cards,
+.content-body > .week-panel,
+.content-body > .timeline {
     margin-top: auto;
     margin-bottom: auto;
+}
+
+/* 脚注要跟着它注释的证据区走，而不是被 margin:auto 甩到页底。
+ * 反例：指标行下面还有一行 principle-row 再跟脚注，脚注与它所注释的表格
+ * 相隔近 200px，读者根本不知道它在注哪一行。
+ * 规则：**最后一个子元素是脚注时**，脚注自己承担「组的下边距」，
+ * 它前面那个元素不再把下边距撑满。用 :has() 判定，避免依赖具体页面结构。 */
+.content-body:has(> .footnote:last-child) > .footnote:last-child {
+    margin-bottom: auto;
+}
+
+.content-body:has(> .footnote:last-child) > :nth-last-child(2) {
+    margin-bottom: 0;
+}
+
+/* 不支持 :has() 的浏览器：脚注紧贴上方内容，不做整组居中（可接受的退化） */
+@supports not selector(:has(*)) {
+    .content-body > .footnote {
+        margin-bottom: 0;
+    }
 }
 
 .content-body > .card-grid > .card,
@@ -542,6 +581,8 @@ strong {
     flex-direction: column;
     gap: var(--gap-md, 14px);
     min-height: 0;
+    /* 证据区靠 margin:auto 在剩余空间里居中；脚注必须跟着证据区走，
+     * 不能被同一条 auto 边距甩到页面底部——那样和它注释的表格相隔半屏。 */
 }
 
 /* 结论条：每页第一块，先给结论再展开 */
@@ -812,8 +853,10 @@ strong {
 .footnote {
     font-size: var(--fs-small);
     color: var(--text-muted);
-    margin-top: 8px;
     line-height: 1.6;
+    margin-top: 6px;
+    flex: 0 0 auto;
+    /* 与证据区在同一个「居中组」里：见下方 --block 规则 */
 }
 
 /* === 结论芯片 / 图例 === */
@@ -1792,8 +1835,9 @@ strong {
 
 /* ============================================================
  * 演讲者视图（按 P 进入）
- * 设计目标：演讲者可能不看鼠标，全部操作都有键位；
- * 展示区只放讲义不重复页面内容，与观众屏形成互补。
+ * 设计目标：讲者站在屏幕前或拿翻页笔，全部操作都有键位，不必碰鼠标。
+ * 右侧只放讲义，与观众屏形成「结论 / 论据」互补，不重复页面内容。
+ * 视图固定深色——全黑会议室里跟随浅色主题会刺眼。
  * ============================================================ */
 .presenter {
     position: fixed;
@@ -1806,8 +1850,8 @@ strong {
     --ink: #eef1f4;
     --ink-rgb: 238, 241, 244;
     --text-body: #cfd5de;
-    --text-muted: #8f97a3;
-    --ink-faint: #7f8793;
+    --text-muted: #a8b0bc;
+    --ink-faint: #97a0ac;
     --surface: #171a20;
     --surface-soft: #1d2128;
     --line: #2b2f37;
@@ -1849,21 +1893,32 @@ body.presenter-on > .progress-bar {
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    padding: 12px 22px;
+    padding: 10px 20px;
     border-bottom: 1px solid #2b2e35;
     background: #15181d;
 }
 
 .pr-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
     font-weight: 650;
     letter-spacing: 0.04em;
     font-size: 14px;
 }
 
+.pr-plan {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: #97a0ac;
+    font-variant-numeric: tabular-nums;
+}
+
 .pr-meta {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     font-size: 13px;
     color: #aeb4be;
 }
@@ -1876,49 +1931,114 @@ body.presenter-on > .progress-bar {
     font-size: 12px;
 }
 
+/* 同步状态：讲者必须一眼分辨「已同步」和「其实没连上」 */
+.pr-sync {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    border: 1px solid #343943;
+    white-space: nowrap;
+}
+
 .pr-sync[data-state="connected"],
 .pr-sync[data-state="synced"] {
     color: #72df99;
+    border-color: rgba(114, 223, 153, 0.45);
+    background: rgba(114, 223, 153, 0.08);
 }
 
+.pr-sync[data-state="connecting"],
 .pr-sync[data-state="stale"] {
     color: #ffc46b;
+    border-color: rgba(255, 196, 107, 0.42);
+    background: rgba(255, 196, 107, 0.08);
 }
 
+.pr-sync[data-state="unsynced"] {
+    color: #ffc46b;
+    border-color: rgba(255, 196, 107, 0.6);
+    background: rgba(255, 196, 107, 0.14);
+}
+
+.pr-sync[data-state="blocked"],
 .pr-sync[data-state="disconnected"] {
-    color: #8f97a3;
+    color: #ff8a8a;
+    border-color: rgba(255, 138, 138, 0.45);
+    background: rgba(255, 138, 138, 0.08);
+}
+
+.pr-sync[data-state="black"],
+.pr-sync[data-state="white"],
+.pr-sync[data-state="frozen"] {
+    color: #aeb4be;
 }
 
 .pr-btn {
     appearance: none;
-    border: 1px solid #3a404a;
-    background: #1c2027;
-    color: #e6e9ee;
+    border: 1px solid #343943;
+    background: #1d2128;
+    color: #dfe4ec;
     border-radius: 8px;
-    padding: 7px 12px;
-    font-size: 13px;
+    padding: 6px 11px;
+    font-size: 12.5px;
     font-family: inherit;
     cursor: pointer;
     white-space: nowrap;
 }
 
 .pr-btn:hover {
-    background: #262c35;
-    border-color: #5b6472;
+    background: #262b33;
+}
+
+.pr-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
 }
 
 .pr-btn.is-on {
     border-color: #84a8ff;
-    box-shadow: inset 0 0 0 1px #84a8ff;
+    color: #cfdcff;
+    background: rgba(132, 168, 255, 0.14);
 }
 
-/* 主区：左预览 右讲义 */
+.pr-mini {
+    appearance: none;
+    border: 1px solid #343943;
+    background: #1d2128;
+    color: #c3cad4;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11.5px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.pr-mini:hover {
+    background: #262b33;
+    color: #eef1f4;
+}
+
+.pr-mini.is-on {
+    border-color: #84a8ff;
+    color: #cfdcff;
+    background: rgba(132, 168, 255, 0.16);
+}
+
+/* 主体：左预览 / 右讲义。默认两栏，设置里可切比例 */
 .pr-main {
     display: grid;
     grid-template-columns: minmax(0, 1.7fr) minmax(340px, 0.8fr);
-    gap: 16px;
-    padding: 16px 22px;
+    gap: 14px;
+    padding: 14px 20px;
     min-height: 0;
+}
+
+.presenter[data-layout="slides"] .pr-main {
+    grid-template-columns: minmax(0, 2.2fr) minmax(260px, 0.55fr);
+}
+
+.presenter[data-layout="notes"] .pr-main {
+    grid-template-columns: minmax(0, 1.15fr) minmax(400px, 1fr);
 }
 
 .pr-stage {
@@ -1927,6 +2047,23 @@ body.presenter-on > .progress-bar {
     gap: 12px;
     min-width: 0;
     min-height: 0;
+}
+
+/* 宫格占满整块预览区，替换当前页/下一页——不弹全屏层 */
+.pr-stage.is-overview {
+    grid-template-rows: minmax(0, 1fr);
+}
+
+.pr-stage.is-overview > .pr-card {
+    display: none;
+}
+
+.pr-stage > .pr-overview {
+    display: none;
+}
+
+.pr-stage.is-overview > .pr-overview {
+    display: grid;
 }
 
 .pr-card {
@@ -1947,19 +2084,32 @@ body.presenter-on > .progress-bar {
     justify-content: space-between;
     align-items: center;
     gap: 10px;
-    padding: 6px 12px;
+    padding: 5px 12px;
     font-size: 12px;
-    color: #98a0ac;
+    color: #97a0ac;
     border-bottom: 1px solid #24282f;
     background: #1a1e24;
     flex: 0 0 auto;
 }
 
-.pr-card-head span:last-child {
+.pr-card-head > span:first-child {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.pr-card-head > span:last-child {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 70%;
+    max-width: 46%;
+}
+
+.pr-tools {
+    display: flex;
+    gap: 5px;
+    margin-left: auto;
 }
 
 /* 16:9 预览：iframe 以 1600×900 渲染，再等比缩放进容器 */
@@ -2001,24 +2151,63 @@ body.presenter-on > .progress-bar {
     z-index: 3;
 }
 
-.pr-card-head + .pr-viewport .pr-ink[data-tool="laser"],
-.pr-card-head + .pr-viewport .pr-ink[data-tool="circle"] {
+.pr-ink[data-tool="laser"],
+.pr-ink[data-tool="circle"] {
     pointer-events: auto;
     cursor: crosshair;
 }
 
-/* 讲义栏 */
+/* 右侧：讲义 / 宫格 */
+.pr-side {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    min-width: 0;
+    min-height: 0;
+}
+
+/* 备注正文可滚动，现场草稿固定在其下方——补一句的入口永远在同一位置 */
+.pr-side-main {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 10px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.pr-side-main[hidden] {
+    display: none;
+}
+
 .pr-notes {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 11px;
     background: #171a20;
     border: 1px solid #2b2f37;
     border-radius: 12px;
-    padding: 16px 18px;
+    padding: 14px 16px;
     min-height: 0;
-    overflow: auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     scrollbar-width: thin;
+    scrollbar-color: #3a4048 transparent;
+}
+
+.pr-notes[hidden] {
+    display: none;
+}
+
+.pr-notes::-webkit-scrollbar {
+    width: 8px;
+}
+
+.pr-notes::-webkit-scrollbar-thumb {
+    background: #3a4048;
+    border-radius: 4px;
+}
+
+.pr-notes::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .pr-note-title {
@@ -2033,16 +2222,16 @@ body.presenter-on > .progress-bar {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-top: 6px;
+    margin-top: -4px;
     font-size: 12px;
-    color: #8f97a3;
+    color: #97a0ac;
 }
 
 .pr-block-label {
     font-size: 11px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #7f8793;
+    color: #97a0ac;
     margin-bottom: 5px;
 }
 
@@ -2059,6 +2248,7 @@ body.presenter-on > .progress-bar {
     display: flex;
     flex-direction: column;
     gap: 7px;
+    counter-reset: pr-talk;
 }
 
 .pr-talk li {
@@ -2082,18 +2272,10 @@ body.presenter-on > .progress-bar {
     color: #84a8ff;
 }
 
-.pr-talk {
-    counter-reset: pr-talk;
-}
-
 .pr-extra {
     display: flex;
     flex-direction: column;
     gap: 8px;
-}
-
-.pr-extra:empty {
-    display: none;
 }
 
 .pr-extra-item {
@@ -2109,15 +2291,14 @@ body.presenter-on > .progress-bar {
     display: block;
     font-size: 11px;
     letter-spacing: 0.12em;
-    color: #8f97a3;
+    color: #97a0ac;
     font-weight: 600;
     margin-bottom: 3px;
 }
 
 .pr-transition {
-    margin-top: auto;
     border-top: 1px solid #2b2f37;
-    padding-top: 10px;
+    padding-top: 9px;
     font-size: 13.5px;
     line-height: 1.6;
     color: #a9b2bf;
@@ -2127,33 +2308,166 @@ body.presenter-on > .progress-bar {
     color: #84a8ff;
 }
 
-/* 底栏 */
+/* 现场草稿：讲者临时补一句，按 data-slide-id 存档 */
+.pr-draft {
+    background: #171a20;
+    border: 1px solid #2b2f37;
+    border-radius: 12px;
+    padding: 9px 12px 11px;
+    flex: 0 0 auto;
+}
+
+.pr-draft-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.pr-draft-tools {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pr-saved {
+    font-size: 11px;
+    color: #72df99;
+    white-space: nowrap;
+}
+
+.pr-draft-input {
+    width: 100%;
+    min-height: 46px;
+    max-height: 132px;
+    resize: vertical;
+    background: #11141a;
+    border: 1px solid #2b2f37;
+    border-radius: 8px;
+    padding: 7px 9px;
+    color: #dfe4ec;
+    font-family: inherit;
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+.pr-draft-input:focus {
+    outline: 1px solid #84a8ff;
+}
+
+/* 宫格选页 */
+.pr-overview {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    background: #171a20;
+    border: 1px solid #2b2f37;
+    border-radius: 12px;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.pr-overview[hidden] {
+    display: none;
+}
+
+.pr-overview-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid #292d34;
+    font-size: 13px;
+}
+
+.pr-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 9px;
+    align-content: start;
+    overflow: auto;
+    padding: 12px;
+    scrollbar-width: thin;
+}
+
+.pr-ov-page {
+    appearance: none;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 8px;
+    min-height: 104px;
+    padding: 11px;
+    border: 1px solid #343943;
+    border-radius: 10px;
+    background: #11141a;
+    color: #eef1f4;
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.pr-ov-page:hover {
+    background: #1d2128;
+    border-color: #636b78;
+}
+
+.pr-ov-page.is-current {
+    border-color: #84a8ff;
+    box-shadow: inset 0 0 0 1px #84a8ff;
+}
+
+.pr-ov-no {
+    font-size: 11.5px;
+    color: #97a0ac;
+    font-variant-numeric: tabular-nums;
+}
+
+.pr-ov-title {
+    font-size: 13.5px;
+    font-weight: 650;
+    line-height: 1.35;
+}
+
+.pr-ov-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11px;
+    color: #8f97a3;
+}
+
+/* 底栏：左时间 / 中控制 / 右页码 */
 .pr-bottom {
     display: grid;
-    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 24px;
-    padding: 10px 22px;
+    gap: 20px;
+    padding: 8px 20px;
     border-top: 1px solid #2b2e35;
     background: #15181d;
+}
+
+.pr-timers {
+    display: flex;
+    gap: 18px;
 }
 
 .pr-timer {
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    gap: 7px;
 }
 
 .pr-t-label {
     font-size: 11px;
     letter-spacing: 0.1em;
-    color: #8f97a3;
+    color: #97a0ac;
 }
 
 .pr-timer strong {
-    font-size: 20px;
+    font-size: 19px;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.03em;
+    color: #eef1f4;
 }
 
 .pr-timer strong.is-running {
@@ -2165,23 +2479,30 @@ body.presenter-on > .progress-bar {
 }
 
 .pr-t-hint {
-    font-size: 12px;
-    color: #7f8793;
+    font-size: 11.5px;
+    color: #97a0ac;
+    white-space: nowrap;
 }
 
-.pr-keys {
-    font-size: 12px;
-    color: #7f8793;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.pr-transport {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.pr-sep {
+    width: 1px;
+    height: 18px;
+    background: #343943;
+    margin: 0 3px;
 }
 
 .pr-page {
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    gap: 7px;
     font-variant-numeric: tabular-nums;
 }
 
@@ -2191,10 +2512,186 @@ body.presenter-on > .progress-bar {
 
 .pr-page span {
     font-size: 12px;
-    color: #8f97a3;
+    color: #97a0ac;
 }
 
-/* 观众屏：黑屏 / 结束遮罩 */
+.pr-pct {
+    margin-left: 4px;
+}
+
+/* 对话框：设置 / 演前检查 / 排练记录 / 快捷键 */
+.pr-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 9100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(6, 8, 11, 0.66);
+}
+
+.pr-dialog[hidden] {
+    display: none;
+}
+
+.pr-dialog-panel {
+    width: min(760px, 100%);
+    max-height: min(80vh, 720px);
+    display: flex;
+    flex-direction: column;
+    background: #171a20;
+    border: 1px solid #2b2f37;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.pr-dialog-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #292d34;
+    font-size: 14px;
+}
+
+.pr-dialog-body {
+    padding: 14px 16px;
+    overflow: auto;
+    scrollbar-width: thin;
+}
+
+.pr-dialog-section {
+    margin-bottom: 14px;
+}
+
+.pr-dialog-section:last-child {
+    margin-bottom: 0;
+}
+
+.pr-dialog-section h4 {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: #97a0ac;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.pr-dialog-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 1px solid #22262d;
+    font-size: 13.5px;
+    color: #cfd5de;
+}
+
+.pr-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid #22262d;
+    font-size: 13.5px;
+    color: #cfd5de;
+}
+
+.pr-check > strong:last-child {
+    margin-left: auto;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.pr-check-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 6px;
+    background: #6b7280;
+    flex: 0 0 auto;
+}
+
+.pr-check.is-ok .pr-check-dot {
+    background: #72df99;
+}
+
+.pr-check.is-warn .pr-check-dot {
+    background: #ffc46b;
+}
+
+.pr-check.is-bad .pr-check-dot {
+    background: #ff8a8a;
+}
+
+.pr-check.is-ok > strong:last-child {
+    color: #72df99;
+}
+
+.pr-check.is-warn > strong:last-child {
+    color: #ffc46b;
+}
+
+.pr-check.is-bad > strong:last-child {
+    color: #ff8a8a;
+}
+
+.pr-muted {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #97a0ac;
+    margin-top: 8px;
+}
+
+.pr-summary {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.pr-summary th,
+.pr-summary td {
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid #22262d;
+    color: #cfd5de;
+}
+
+.pr-summary th {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: #97a0ac;
+    font-weight: 600;
+}
+
+.pr-seg {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.pr-shortcuts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 16px;
+    align-items: baseline;
+    font-size: 13.5px;
+    color: #cfd5de;
+}
+
+.pr-shortcuts kbd {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    border: 1px solid #343943;
+    background: #11141a;
+    color: #e6e9ee;
+    white-space: nowrap;
+}
+
+/* 观众屏：黑屏 / 白屏 / 结束遮罩 / 标注层 */
 body.audience-black .presentation,
 body.audience-black .navigation,
 body.audience-black .progress-bar {
@@ -2213,6 +2710,15 @@ body.audience-white .progress-bar {
 
 body.audience-white {
     background: #fff;
+}
+
+.audience-ink {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 8000;
 }
 
 /* 冻结：观众屏停在原页，演讲者可继续翻页 */
@@ -2270,25 +2776,37 @@ body.mode-preview .slide {
     animation: none;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
     .pr-main {
-        grid-template-columns: minmax(0, 1.35fr) minmax(290px, 0.85fr);
+        grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.8fr);
         gap: 12px;
         padding: 12px 16px;
     }
 
-    .pr-stage {
-        grid-template-rows: minmax(0, 1fr) clamp(72px, 13vh, 104px);
-        gap: 10px;
+    .pr-timers {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .pr-main,
+    .presenter[data-layout="slides"] .pr-main,
+    .presenter[data-layout="notes"] .pr-main {
+        grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
     }
 
     .pr-bottom {
-        gap: 14px;
-        padding: 9px 16px;
+        gap: 12px;
+        padding: 8px 14px;
     }
 
-    .pr-keys {
+    .pr-t-hint {
         display: none;
+    }
+
+    .pr-btn {
+        padding: 5px 9px;
+        font-size: 12px;
     }
 }
 
@@ -2305,6 +2823,10 @@ body.mode-preview .slide {
     .pr-notes {
         gap: 9px;
         padding: 12px 14px;
+    }
+
+    .pr-draft-input {
+        min-height: 42px;
     }
 }
 
