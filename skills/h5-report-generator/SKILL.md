@@ -1,6 +1,6 @@
 ---
 name: h5-report-generator
-description: 用户需要做汇报材料、H5 演示文稿、网页版幻灯片、部门汇报、项目汇报、工作总结展示，或提到"H5 格式""网页版 PPT""浏览器里展示的幻灯片""演讲者视图""演讲备注""投屏演示""排练计时"时使用。含会前排练、宫格选页、观众屏同步与四种主题（浅蓝 / 牛皮纸 / 沙丘 / 墨水经典）。
+description: 用户需要做汇报材料、H5 演示文稿、网页版幻灯片、部门汇报、项目汇报、工作总结展示，或提到"H5 格式""网页版 PPT""浏览器里展示的幻灯片""演讲者视图""演讲备注""投屏演示""排练计时"，或手上有 presentation.md / handoff.json 结构化内容需要渲染成 H5 时使用。含会前排练、宫格选页、观众屏同步与四种主题（浅蓝 / 牛皮纸 / 沙丘 / 墨水经典）。
 ---
 
 # H5 汇报材料生成工具
@@ -40,6 +40,27 @@ skills/h5-report-generator/
 │   └── generate.py             # 旧版配置式生成脚本（参考用，主流程不依赖）
 └── references/                 # 通用参考文档
 ```
+
+---
+
+## 输入模式（正式支持）
+
+本 Skill 支持两种独立输入模式：
+
+**直接生成模式**：用户提供主题、提纲、对话或现成内容，执行下方 Step 0–5 原流程，不依赖前置 Skill。
+
+**结构化内容模式**：用户提供符合 `references/presentation-content-contract.md` 的 `presentation.md`（可附 `handoff.json`）。前置内容 Skill（如 `presentation-content-architect`）负责产出内容，本 Skill 只做格式适配与版式映射；本 Skill 不附带解析器，符合性靠逐节核对，不依赖旧版 `generate.py`：
+
+1. 逐页读取 `slide_id`、`role`、`title`、`Takeaway`、`Visible`、`Evidence`、`Visual Intent`、`Speaker Notes`。有 `handoff.json` 时核对 `slides[].slide_id` 顺序与 Markdown 一致；冲突时停下来问用户。
+2. **发布门禁**：`handoff.json` 的 `readiness` 不是 `ready`，或 `presentation.md` 的 `status` 不是 `READY` 时，只输出预览并列出未决/未核实项，不宣称可发布（`needs_review` 与 `blocked` 都属于此类）。
+3. 保留页面顺序、已确认事实和核心主张，不重复发散生成内容。内容页数低于模板最低 5 页时先征求用户确认。
+4. 主题优先级：`handoff.json` 的 `adapter.theme` > 用户明确指定 > 默认 `light-gradient`。此模式下只跳过 Step 0 的页数/章节/标题/胶囊规划，主题、模板读取和时间预算照旧。
+5. 字段映射：封面 Takeaway / Visible 中的结论胶囊 → `{{COVER_CHIPS}}`（2–3 条，与收尾呼应）；目录章节结论 → `.toc-concl`、章节要点 → `.toc-points`（每格 ≥2 条，作为 `.toc-concl` 的兄弟元素）；内容页 `title` → `.content-title`、`Takeaway` → `.lead-bar`、`Visible` → 展开区证据组件；收尾 Takeaway → `{{CLOSE_LINES}}`（≤3 条，呼应封面）。
+6. `Speaker Notes` → `window.SPEAKER_NOTES`：用该页 `#` 结论标题合成必填的 `title`；`Purpose/Talk/Transition/Minutes/Cue/Interaction/Fallback` 映射为 `purpose/talk/transition/minutes/cue/interaction/fallback`，`id` 与对应页面的 `data-slide-id` 完全一致，`talk` 保持 2–4 条、每条 ≤40 字。
+7. `Evidence` 中未验证数据和假设必须在观众可见区域标明限定条件，不得只藏在备注中。
+8. `Visual Intent` 是语义建议，选用原有卡片、表格、图表、时间轴等组件；不要把 Markdown 原文直接作为 HTML。
+9. 校验时把 `presentation.md` 的 `duration_minutes` 传给 `validate_deck.py --target-minutes`。遇到溢出或不支持组件，反馈 `slide_id / issue / available_space / proposed_revision`，不得静默删除关键论据。
+10. 完成上述适配后继续执行下方 Step 1–5、`validate_deck.py` 和浏览器验收。
 
 ---
 
@@ -453,6 +474,7 @@ H5 主要用于会议室投屏，观看距离 2–5 米。主题用 `clamp()` �
 | `references/optimization.md` | 性能优化建议 |
 | `references/responsive-design.md` | 响应式设计指南 |
 | `references/troubleshooting.md` | 常见问题排查 |
+| `references/presentation-content-contract.md` | 结构化内容输入契约（`presentation.md` / `handoff.json` → H5） |
 
 ---
 

@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-11-26
+
+### Added
+
+- `h5-report-generator` 新增「结构化内容模式」：除直接生成外，可消费符合 `references/presentation-content-contract.md` 的 `presentation.md`（可附 `handoff.json`），由 Agent 按语义映射到既有 HTML 骨架，不依赖旧版 `generate.py`。契约文件随 Skill 一起发布，并加入 SKILL.md 参考文档表。
+- 结构化模式明确 `slide_id` 顺序核对、封面/目录/内容页/收尾字段映射、备注字段与必填 `title` 合成、`duration_minutes` 传入时间预算校验，以及溢出/不支持组件的反馈格式。
+
+### Changed
+
+- 结构化模式增加发布门禁：`handoff.json` 的 `readiness` 非 `ready`，或 `presentation.md` 的 `status` 非 `READY` 时只输出预览并列出未决/未核实项，不宣称可发布。
+- 主题优先级明确为 `adapter.theme` > 用户指定 > 默认 `light-gradient`；该模式只跳过 Step 0 的内容规划部分，模板读取与时间预算照旧。
+- `SKILL.md` 的 `description` 增加结构化内容输入的触发词。
+- 移除仓库中未发布的 `skills/h5-report-generator copy/` 目录，其内容已合并进正式 Skill。
+
 ## [0.4.0] - 2026-11-26
 
 ### Added
