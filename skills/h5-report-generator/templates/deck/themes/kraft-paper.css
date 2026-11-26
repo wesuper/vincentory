@@ -6,14 +6,14 @@
  * ============================================================ */
 
 [data-theme="kraft-paper"] {
-    --accent: #9b5a2e;
+    --accent: #8d4f27;
     --accent-2: #b97a4b;
     --accent-3: #c98d5e;
-    --accent-rgb: 155, 90, 46;
+    --accent-rgb: 141, 79, 39;
     --accent-ink: #4a2c14;
     --accent-ink-2: #804212;
     --on-accent: #eedfc7;
-    --accent-fill: linear-gradient(135deg, #6d3d1c, #9b5a2e);
+    --accent-fill: linear-gradient(135deg, #6d3d1c, #8d4f27);
 
     --paper: #eedfc7;
     --slide-bg: linear-gradient(180deg, #f4e7d2 0%, #f6ecdc 50%, #efe0c8 100%);
@@ -28,7 +28,7 @@
     --ink-rgb: 42, 30, 19;
     --text-body: #493c2f;
     --text-muted: #755f49;
-    --ink-faint: #8f816f;
+    --ink-faint: #6b6153;
     --line: rgba(155, 90, 46, 0.18);
     --line-2: #e6d4b8;
 
@@ -37,14 +37,14 @@
     --danger-ink: #84261c;
     --danger-bg: #f2ddd2;
     --danger-bg-soft: #f7e8e0;
-    --warn: #9a6414;
+    --warn: #875608;
     --warn-ink: #7d5210;
     --warn-ink-mid: #8c6118;
     --warn-bg: #f3e6c9;
     --ok: #4f6b32;
     --ok-ink: #3c5226;
     --ok-ink-2: #445c2b;
-    --ok-lm: #6b8544;
+    --ok-lm: #556b28;
     --ok-bg: #e7e6c9;
 
     --font-display: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;

@@ -71,7 +71,9 @@
             </div>
         </section>
 
-        <!-- {{PAGES}}：按 page-templates.md 的三段式写入内容页；id 与 data-slide-id 都要唯一 -->
+        <!-- 内容页插槽：按 page-templates.md 的三段式写入；id 与 data-slide-id 都要唯一。
+             占位符在整个骨架里只出现这一处——若在注释里再写一遍同名字面量，
+             按占位符做全局替换时会把内容页写两遍，出现重复 id。 -->
         {{PAGES}}
 
         <!-- 收尾页 -->

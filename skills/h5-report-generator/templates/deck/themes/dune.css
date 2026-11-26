@@ -6,14 +6,14 @@
  * ============================================================ */
 
 [data-theme="dune"] {
-    --accent: #8f7650;
+    --accent: #7a6444;
     --accent-2: #a8906c;
     --accent-3: #bda684;
-    --accent-rgb: 143, 118, 80;
+    --accent-rgb: 122, 100, 68;
     --accent-ink: #3a2f20;
     --accent-ink-2: #705833;
     --on-accent: #f0e6d2;
-    --accent-fill: linear-gradient(135deg, #5f4a2c, #8f7650);
+    --accent-fill: linear-gradient(135deg, #5f4a2c, #7a6444);
 
     --paper: #f0e6d2;
     --slide-bg: linear-gradient(180deg, #f6edda 0%, #f8f0e1 50%, #f1e6d1 100%);
@@ -28,7 +28,7 @@
     --ink-rgb: 31, 26, 20;
     --text-body: #3f3931;
     --text-muted: #6f6557;
-    --ink-faint: #8a8275;
+    --ink-faint: #6b6659;
     --line: rgba(143, 118, 80, 0.2);
     --line-2: #e3d6bd;
 
@@ -37,14 +37,14 @@
     --danger-ink: #852f26;
     --danger-bg: #f1ded6;
     --danger-bg-soft: #f7e9e3;
-    --warn: #91671f;
+    --warn: #855c18;
     --warn-ink: #745115;
     --warn-ink-mid: #85601d;
     --warn-bg: #f1e6c8;
     --ok: #4d6540;
     --ok-ink: #394d2f;
     --ok-ink-2: #425a35;
-    --ok-lm: #6a7f55;
+    --ok-lm: #586b44;
     --ok-bg: #e8e6cc;
 
     --font-display: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
