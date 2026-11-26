@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<!-- data-theme：默认 light-gradient 蓝色；可选 kraft-paper / dune / ink-classic -->
+<html lang="zh-CN" data-theme="{{THEME}}">
 
 <head>
     <meta charset="UTF-8">
@@ -10,9 +11,14 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
-    <!-- 主题样式（装配时内联到这里） -->
+    <!-- 样式：结构样式 + 选定主题的皮肤，两段都要内联。
+         注意槽位注释里不要写 HTML 注释标记，style 内的 `<!--` 会让浏览器提前结束样式表。 -->
     <style>
         /* === STYLE_CSS === */
+        /* deck/style.css：结构令牌 + 组件布局 + 演讲者视图 */
+
+        /* === THEME_CSS === */
+        /* deck/themes/{{THEME}}.css：只放选定的那一个主题，不要叠加多个 */
     </style>
 </head>
 
@@ -24,7 +30,7 @@
     <div class="presentation">
 
         <!-- P1 封面 -->
-        <section class="slide active" id="slide-cover">
+        <section class="slide active" id="slide-cover" data-slide-id="cover">
             <div class="cover-page">
                 <div class="cover-decoration">
                     <div class="deco-circle deco-circle-1"></div>
@@ -45,12 +51,12 @@
                 <div class="cover-chips">
                     {{COVER_CHIPS}}
                 </div>
-                <div class="cover-hint">← / → 方向键翻页</div>
+                <div class="cover-hint">← / → 翻页 · F 全屏 · P 演讲者视图</div>
             </div>
         </section>
 
         <!-- P2 目录：每章一句结论 + 2–3 条要点 -->
-        <section class="slide" id="slide-toc">
+        <section class="slide" id="slide-toc" data-slide-id="toc">
             <div class="toc-page">
                 <div class="toc-header">
                     <div class="toc-icon">📋</div>
@@ -65,11 +71,11 @@
             </div>
         </section>
 
-        <!-- {{PAGES}}：按 page-templates.md 的三段式写入内容页，每页 id 唯一 -->
+        <!-- {{PAGES}}：按 page-templates.md 的三段式写入内容页；id 与 data-slide-id 都要唯一 -->
         {{PAGES}}
 
         <!-- 收尾页 -->
-        <section class="slide" id="slide-end">
+        <section class="slide" id="slide-end" data-slide-id="closing">
             <div class="qa-page">
                 <div class="qa-decoration">
                     <div class="qa-circle qa-circle-1"></div>
@@ -95,6 +101,12 @@
     <!-- 交互脚本（装配时内联到这里） -->
     <script>
         /* === SCRIPT_JS === */
+    </script>
+
+    <!-- 演讲备注：每页一条，id 必须与 section 的 data-slide-id 一致 -->
+    <script>
+        /* === SPEAKER_NOTES === */
+        window.SPEAKER_NOTES = [];
     </script>
 </body>
 

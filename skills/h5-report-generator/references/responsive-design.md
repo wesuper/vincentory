@@ -12,7 +12,7 @@
 
 ## 断点设置
 
-`light-gradient` v5 主题内置三组媒体查询，新增主题时建议沿用：
+`deck` 主题系统内置三组媒体查询，新增主题时建议沿用：
 
 | 查询 | 作用 |
 |------|------|
@@ -222,7 +222,7 @@ window.addEventListener('resize', function() {
 
 ## 完整示例
 
-查看 `templates/h5-report-responsive.html` 了解完整的响应式实现。
+响应式实现见 `templates/h5-report-template.html`（由 `deck/style.css` 内联生成），三组断点定义在 `templates/deck/style.css` 末尾的 `@media` 块中。
 
 ```html
 <!DOCTYPE html>

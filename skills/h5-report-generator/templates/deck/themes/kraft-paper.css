@@ -1,0 +1,57 @@
+/* ============================================================
+ * 主题：kraft-paper — 牛皮纸 · 暖棕 + 宋体 · 杂志手作感
+ * 适用：复盘、总结、内部分享
+ * 只含皮肤令牌（颜色 / 字体 / 阴影）；结构令牌与组件样式在 ../style.css
+ * 装配：<link rel="stylesheet" href="themes/kraft-paper.css">，或整段内联到 style 槽位 THEME_CSS 处
+ * ============================================================ */
+
+[data-theme="kraft-paper"] {
+    --accent: #9b5a2e;
+    --accent-2: #b97a4b;
+    --accent-3: #c98d5e;
+    --accent-rgb: 155, 90, 46;
+    --accent-ink: #4a2c14;
+    --accent-ink-2: #804212;
+    --on-accent: #eedfc7;
+    --accent-fill: linear-gradient(135deg, #6d3d1c, #9b5a2e);
+
+    --paper: #eedfc7;
+    --slide-bg: linear-gradient(180deg, #f4e7d2 0%, #f6ecdc 50%, #efe0c8 100%);
+    --surface: #faf2e4;
+    --surface-soft: #f2e5d0;
+    --tint: #ecd9bd;
+    --tint-strong: #e0c9a5;
+    --tint-soft: #f4e7d2;
+    --tint-hover: #e8d3b3;
+
+    --ink: #2a1e13;
+    --ink-rgb: 42, 30, 19;
+    --text-body: #493c2f;
+    --text-muted: #755f49;
+    --ink-faint: #8f816f;
+    --line: rgba(155, 90, 46, 0.18);
+    --line-2: #e6d4b8;
+
+    --danger: #a33327;
+    --danger-rgb: 163, 51, 39;
+    --danger-ink: #84261c;
+    --danger-bg: #f2ddd2;
+    --danger-bg-soft: #f7e8e0;
+    --warn: #9a6414;
+    --warn-ink: #7d5210;
+    --warn-ink-mid: #8c6118;
+    --warn-bg: #f3e6c9;
+    --ok: #4f6b32;
+    --ok-ink: #3c5226;
+    --ok-ink-2: #445c2b;
+    --ok-lm: #6b8544;
+    --ok-bg: #e7e6c9;
+
+    --font-display: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --shadow-sm: 0 4px 16px rgba(74, 44, 20, 0.07);
+    --shadow-md: 0 6px 24px rgba(74, 44, 20, 0.09);
+    --shadow-lg: 0 12px 32px rgba(74, 44, 20, 0.15);
+    --glass: rgba(250, 242, 228, 0.92);
+    --glass-strong: rgba(250, 242, 228, 0.96);
+}

@@ -1,14 +1,15 @@
-# Light Gradient Theme — 页面类型 HTML 结构 (v5)
+# Deck Theme — 页面类型 HTML 结构 (v6)
 
-> 适用于 `templates/light-gradient/` 主题。本文件是**结构契约**：照抄骨架、替换文字即可。
+> 适用于 `templates/deck/` 主题系统（`light-gradient` 默认 / `kraft-paper` / `dune` / `ink-classic`）。本文件是**结构契约**：照抄骨架、替换文字即可。
 
 ## 通用约定
 
-- 每页是一个 `<section class="slide" id="slide-<页面名>">` 元素，id 全局唯一
+- 每页是一个 `<section class="slide" id="slide-<页面名>" data-slide-id="<备注 id>">` 元素，`id` 与 `data-slide-id` 都全局唯一
+- **`data-slide-id` 是演讲者备注的绑定键**：必须每页都有（含封面/目录/收尾），且与 `window.SPEAKER_NOTES` 中对应条目的 `id` 完全一致。缺 `data-slide-id` 时脚本会退回用 `id` 去掉 `slide-` 前缀，但不要依赖这个兜底
 - **页面顺序 = DOM 顺序**，无需维护 `slideOrder` 数组（脚本按 DOM 顺序生成页码与进度）
 - 第一页（封面）带 `class="slide active"`，其余只写 `class="slide"`
 - 追加位置：`<div class="presentation">` 内部、`{{PAGES}}` 占位处
-- `body` 背景色由主题固定为 `#e8f4fc`，不要改
+- 主题由 `<html data-theme="…">` 与内联的皮肤文件 `themes/<id>.css` 共同决定（两者必须一致），**页面结构不随主题变化**
 - 章节编号与目录中的罗马数字（Ⅰ Ⅱ Ⅲ …）保持一致
 
 ### 每页必备的三段式（结构契约，缺一即为不合格）
@@ -27,10 +28,52 @@
 
 ---
 
+## 0. 演讲者备注（`SPEAKER_NOTES`）契约
+
+演讲者视图（`P` 键）不读页面正文，只读 `window.SPEAKER_NOTES`。**每页必须有一条**，`id` 与页面的 `data-slide-id` 一一对应。
+
+```js
+window.SPEAKER_NOTES = [
+  {
+    id: 'metrics',                    // 必填：= section 的 data-slide-id
+    title: '风险指标：四项全部达标',    // 必填：备注栏顶部标题，可不同于页面标题
+    section: '风险指标',                // 选填：所属章节
+    minutes: 4,                        // 选填：本页计划时长（分钟）
+    purpose: '把"达标"拆成四个可核对的指标',   // 必填：这一页存在的理由
+    talk: [                            // 必填：2–4 条讲述要点
+      '逾期率 2.1%，低于 2.5% 目标，连续三个季度下降',
+      '投诉率 0.3%，离预警线只剩 0.05 个百分点，这是真正的风险点'
+    ],
+    transition: '达标不等于可以松手，所以有了 Q4 的三步计划',  // 必填：转场句
+    advance: '讲完投诉率预警后停一下，再翻页',   // 选填：翻页时机
+    cue: '投诉率这里放慢，这是全场最需要被记住的风险',  // 选填：舞台提示
+    delivery: '语速放慢，数字重读',              // 选填：表达方式
+    interaction: '问一句：投诉率预警线是多少？',   // 选填：互动
+    fallback: '被追问口径时翻回上一页的表格',      // 选填：备用方案
+    pronunciation: '逾期率（yú qī lǜ）'          // 选填：生僻读音
+  }
+];
+```
+
+### 写备注的规矩：补页面，不抄页面
+
+演讲者视图右侧是窄栏，**照抄页面要点等于让讲者重读一遍观众已经看见的字**。备注只写观众看不到的三种东西：
+
+| 该写 | 不该写 |
+|------|--------|
+| **背景**——这个数字从哪来、和前几页什么关系 | 页码上已有的 `lead-bar` 原文 |
+| **例子**——一个具体客户/场景，让抽象数字落地 | 卡片里已经列出的三条 bullet |
+| **判断**——讲者自己的取舍、担心、需要领导拍板的点 | 表格里的明细行 |
+| **转场句**——为什么下一页是下一页 | "这一页讲风险指标"这类目录式复述 |
+
+`talk` 每条 ≤ 40 字，2–4 条；超过 4 条说明这页该拆。`purpose` 一句话，回答"听众听完这页应该改变什么判断"。
+
+---
+
 ## 1. 封面页
 
 ```html
-<section class="slide active" id="slide-cover">
+<section class="slide active" id="slide-cover" data-slide-id="cover">
     <div class="cover-page">
         <div class="cover-decoration">
             <div class="deco-circle deco-circle-1"></div>
@@ -52,7 +95,7 @@
             <div class="cover-chip alert">关键风险期 <b>零变更</b></div>
             <div class="cover-chip">资源就绪 · <b>已扩容</b></div>
         </div>
-        <div class="cover-hint">← / → 方向键翻页</div>
+        <div class="cover-hint">← / → 翻页 · F 全屏 · P 演讲者视图</div>
     </div>
 </section>
 ```
@@ -67,7 +110,7 @@
 ## 2. 目录页
 
 ```html
-<section class="slide" id="slide-toc">
+<section class="slide" id="slide-toc" data-slide-id="toc">
     <div class="toc-page">
         <div class="toc-header">
             <div class="toc-icon">📋</div>
@@ -106,7 +149,7 @@
 ## 3. 三栏卡片页
 
 ```html
-<section class="slide" id="slide-cards">
+<section class="slide" id="slide-cards" data-slide-id="cards">
     <div class="content-page">
         <div class="content-header">
             <div class="content-number">01</div>
@@ -141,7 +184,7 @@
 ## 4. 对比 / 明细表格页
 
 ```html
-<section class="slide" id="slide-table">
+<section class="slide" id="slide-table" data-slide-id="table">
     <div class="content-page">
         <div class="content-header">
             <div class="content-number">02</div>
@@ -190,7 +233,7 @@
 ## 5. 指标行页
 
 ```html
-<section class="slide" id="slide-metrics">
+<section class="slide" id="slide-metrics" data-slide-id="metrics">
     <div class="content-page">
         <div class="content-header">
             <div class="content-number">03</div>
@@ -352,7 +395,7 @@
 ## 14. 收尾页
 
 ```html
-<section class="slide" id="slide-end">
+<section class="slide" id="slide-end" data-slide-id="closing">
     <div class="qa-page">
         <div class="qa-decoration">
             <div class="qa-circle qa-circle-1"></div>
@@ -375,3 +418,53 @@
 ```
 
 > 收尾页复述 3 条以内核心结论（与封面胶囊呼应），不要引入新信息。
+
+---
+
+## 15. 主题切换
+
+主题由两处共同决定，且必须一致：`<html data-theme="…">` 的属性值，以及内联进 `THEME_CSS` 槽位的那一个皮肤文件。页面 HTML 一行都不用动：
+
+```html
+<html lang="zh-CN" data-theme="light-gradient">   <!-- 默认：浅蓝，内联 themes/light-gradient.css -->
+<html lang="zh-CN" data-theme="kraft-paper">      <!-- 牛皮纸：暖棕 + 宋体 -->
+<html lang="zh-CN" data-theme="dune">             <!-- 沙丘：沙色 + 炭黑 -->
+<html lang="zh-CN" data-theme="ink-classic">      <!-- 墨水经典：纸白 + 近黑 + 衬线 -->
+```
+
+> **只内联一个皮肤**。四个都塞进去会互相覆盖，且文件平白多出三份无用样式。`data-theme` 填了 A 却内联了 B 的皮肤，页面会变成「结构和 B 的皮肤、但所有 `[data-theme="A"]` 选择器全部落空」——症状是整页掉回浏览器默认样式。
+
+| 主题 | 主色 | 背景 | 气质 | 适用 |
+|------|------|------|------|------|
+| `light-gradient` | `#0066cc` 蓝 | 浅蓝渐变 | 清爽、企业、默认 | 技术/产品/季度汇报（默认首选） |
+| `kraft-paper` | `#9b5a2e` 棕 | 牛皮纸 `#eedfc7` | 手作、杂志、沉稳 | 复盘、总结、内部分享 |
+| `dune` | `#8f7650` 沙 | 沙色 `#f0e6d2` | 克制、高级、安静 | 战略、年度、对外汇报 |
+| `ink-classic` | `#111` 墨 | 纸白 `#f1efea` | 极简、印刷、锐利 | 观点表达、评审、设计稿 |
+
+> 三个杂志主题的显示字体切为衬线（`Songti SC` / `Noto Serif SC` / `Playfair Display`），换主题时**不要**再手写 `font-family`，否则会破坏主题一致性。颜色一律走语义变量（`--accent` / `--ink` / `--surface` / `--tint` …），禁止在页面里写死十六进制色值——写死就会在换主题时变成不协调的色块。
+
+---
+
+## 16. 演讲者视图（`P` 键）
+
+这不是页面结构，是交付时必须验证的演示能力。打开 `index.html` 按 `P`（或点右下 `P` 按钮）：
+
+- **左侧**：当前页 16:9 显示 + 下一页小窗，均为真实缩放的 iframe 预览（不重新加载页面）
+- **右侧**：`SPEAKER_NOTES` 渲染成窄栏提示——本页目的、讲述要点、舞台提示、表达、翻页时机、转场句
+- **底部**：总计时 + 本页计时 + 计划剩余 + 页码
+- **观众屏**：进入演讲者视图时自动另开一个 `?mode=audience` 窗口供投屏；两窗页码、黑屏状态双向同步
+
+键盘即可完成全部操作，讲者不需要碰鼠标：
+
+| 键 | 作用 | 键 | 作用 |
+|----|------|----|------|
+| `→` `PageDown` `Space` | 下一页 | `←` `PageUp` | 上一页 |
+| `Home` / `End` | 首页 / 末页 | `P` / `Esc` | 退出演讲者视图 |
+| `B` | 观众屏黑屏（可再按恢复） | `W` | 观众屏白屏 |
+| `F` | 冻结观众屏在当前页 | `R` | 暂停 / 继续计时 |
+| `L` | 激光笔（跟随触控板） | `C` | 圈选批注 |
+| `X` | 清除批注 | `+` / `-` | 备注字号增减 |
+
+> `F` 是上下文相关的：**演示模式下是全屏**，**演讲者视图里是冻结观众屏**。`Space` 与 `→` 等价（翻页），演讲者视图里的 `Esc` 等价于 `P`（退出），都不会误触浏览器全屏。
+
+> 演讲者视图**固定深色**（右侧备注栏在全黑房间里不刺眼），与页面主题无关——所以不要在 `.presenter` 作用域内引用浅色主题变量。

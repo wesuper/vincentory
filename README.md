@@ -48,7 +48,7 @@ Every skill lives directly under `skills/` as `skills/<skill-name>/SKILL.md` —
 
 ## Published skills
 
-- [h5-report-generator](skills/h5-report-generator/SKILL.md) — 企业级 HTML5 幻灯片演示系统生成器。当用户需要生成汇报材料、H5 演示文稿、网页版幻灯片，或明确要求"H5格式"、"网页版PPT"时使用。结论先行信息架构（封面结论胶囊、目录每章结论+要点、页面结论条）、顶部进度条、ECharts/Mermaid 图表、PC 端投屏优化，5-30 页幻灯片。
+- [h5-report-generator](skills/h5-report-generator/SKILL.md) — 企业级 HTML5 幻灯片演示系统生成器。当用户需要生成汇报材料、H5 演示文稿、网页版幻灯片，或明确要求"H5格式"、"网页版PPT"、"演讲者视图/备注"时使用。结论先行信息架构（封面结论胶囊、目录每章结论+要点、页面结论条）、顶部进度条、演讲者视图与双屏同步、ECharts/Mermaid 图表、PC 端投屏优化。内置四种主题：默认浅蓝 `light-gradient`，可选牛皮纸 `kraft-paper`、沙丘 `dune`、墨水经典 `ink-classic`；每个主题是独立皮肤文件，结构与皮肤分层。5-30 页幻灯片。
 
 ## Local development
 

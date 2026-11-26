@@ -1,0 +1,57 @@
+/* ============================================================
+ * 主题：dune — 沙丘 · 沙色 + 炭黑 · 克制高级
+ * 适用：战略、年度、对外汇报
+ * 只含皮肤令牌（颜色 / 字体 / 阴影）；结构令牌与组件样式在 ../style.css
+ * 装配：<link rel="stylesheet" href="themes/dune.css">，或整段内联到 style 槽位 THEME_CSS 处
+ * ============================================================ */
+
+[data-theme="dune"] {
+    --accent: #8f7650;
+    --accent-2: #a8906c;
+    --accent-3: #bda684;
+    --accent-rgb: 143, 118, 80;
+    --accent-ink: #3a2f20;
+    --accent-ink-2: #705833;
+    --on-accent: #f0e6d2;
+    --accent-fill: linear-gradient(135deg, #5f4a2c, #8f7650);
+
+    --paper: #f0e6d2;
+    --slide-bg: linear-gradient(180deg, #f6edda 0%, #f8f0e1 50%, #f1e6d1 100%);
+    --surface: #faf3e6;
+    --surface-soft: #f4ead8;
+    --tint: #ece0c8;
+    --tint-strong: #dfcfb0;
+    --tint-soft: #f6edda;
+    --tint-hover: #e7d8bd;
+
+    --ink: #1f1a14;
+    --ink-rgb: 31, 26, 20;
+    --text-body: #3f3931;
+    --text-muted: #6f6557;
+    --ink-faint: #8a8275;
+    --line: rgba(143, 118, 80, 0.2);
+    --line-2: #e3d6bd;
+
+    --danger: #9e3d33;
+    --danger-rgb: 158, 61, 51;
+    --danger-ink: #852f26;
+    --danger-bg: #f1ded6;
+    --danger-bg-soft: #f7e9e3;
+    --warn: #91671f;
+    --warn-ink: #745115;
+    --warn-ink-mid: #85601d;
+    --warn-bg: #f1e6c8;
+    --ok: #4d6540;
+    --ok-ink: #394d2f;
+    --ok-ink-2: #425a35;
+    --ok-lm: #6a7f55;
+    --ok-bg: #e8e6cc;
+
+    --font-display: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --shadow-sm: 0 4px 16px rgba(62, 44, 18, 0.06);
+    --shadow-md: 0 6px 24px rgba(62, 44, 18, 0.08);
+    --shadow-lg: 0 12px 32px rgba(62, 44, 18, 0.14);
+    --glass: rgba(250, 243, 230, 0.92);
+    --glass-strong: rgba(250, 243, 230, 0.96);
+}
