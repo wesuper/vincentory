@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2026-11-26
+
+### Changed
+
+- `h5-report-generator` 将常规汇报时长控制调整为两档：30 分钟会议默认 deck 讲 25 分钟（8–10 页），60 分钟会议默认讲 50 分钟（12–16 页）；剩余会议时间留给 Q&A。
+- Step 0 明确用户输入的汇报时长、页数与内容要求优先于会议时长默认值；未在 deck 中明确的时间按用户要求使用，不套用旧表。`duration_minutes` 和 `validate_deck.py --target-minutes` 始终使用 deck 汇报时长，不是会议总长。
+- 结构化内容模式同步采用新的时长优先级，并明确页数按“少而完整”控制，避免生成过多页面。
+
 ## [Unreleased]
 
 ### Changed
