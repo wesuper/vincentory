@@ -48,6 +48,7 @@ Every skill lives directly under `skills/` as `skills/<skill-name>/SKILL.md` —
 
 ## Published skills
 
+- [presentation-content-architect](skills/presentation-content-architect/SKILL.md) — 当用户带着一句话、提纲、对话或材料需要做汇报、论证或逐页写稿时使用。通过渐进式提问、论点/证据台账和状态机，产出渲染器中立的 presentation.md、讲者备注、sources.md 与 handoff.json；不负责 HTML/CSS 排版。
 - [h5-report-generator](skills/h5-report-generator/SKILL.md) — 企业级 HTML5 幻灯片演示系统生成器。当用户需要生成汇报材料、H5 演示文稿、网页版幻灯片，或明确要求"H5 格式"、"网页版 PPT"、"演讲者视图/备注"、"投屏演示"、"排练计时"时使用。结论先行信息架构（封面结论胶囊、目录每章结论+要点、页面结论条）、顶部进度条、ECharts/Mermaid 图表、PC 端投屏优化。演讲者视图含宫格选页、排练计时、演前检查、现场草稿、激光与圈选、双屏同步。内置四种主题：默认浅蓝 `light-gradient`，可选牛皮纸 `kraft-paper`、沙丘 `dune`、墨水经典 `ink-classic`；每个主题是独立皮肤文件，结构与皮肤分层。附结构校验器与主题对比度校验器。5-30 页幻灯片。
 
 ## Local development

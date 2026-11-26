@@ -1,0 +1,33 @@
+{
+  "stage": "REVIEW",
+  "revision": 3,
+  "original_input": "我想给管理层讲 AI 知识管理，争取试点",
+  "confirmed": {
+    "audience": "企业管理层",
+    "objective": "批准试点设计"
+  },
+  "assumptions": [
+    "尚无内部收益数据"
+  ],
+  "open_questions": [
+    "首个试点业务场景是什么？"
+  ],
+  "decision_log": [
+    {
+      "revision": 1,
+      "change": "从泛泛产品介绍转为试点决策型汇报"
+    },
+    {
+      "revision": 2,
+      "change": "移除未经核实的 ROI 数字"
+    }
+  ],
+  "slide_maturity": {
+    "cover": "review",
+    "toc": "review",
+    "s01": "needs_evidence",
+    "s02": "review",
+    "s03": "review",
+    "end": "review"
+  }
+}

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- `presentation-content-architect` 按 skill 最佳实践重构：description 改为触发条件，正文改为六步任务清单、明确的提问/跳过规则、机器可判定的 READY 门禁与回归测试、压力下常见误判对照表与单层引用索引；删除重复的 `references/content-contract.md`。
+- 将该 Skill 加入 `.claude-plugin/plugin.json` 的 `skills` 数组和 README 发布列表，并更新其 README 以匹配新流程。
+- `validate_content.py` 增加状态枚举、三处进度一致性、每页 `Minutes:` 完整性、Evidence 非空、READY 门禁字段检查与回归测试；`unresolved` 在 handoff schema 与共享契约中改为必填。
+- 添加 `.claude-plugin/icon.png` 插件图标，修复 `ICON_MISSING` 警告。
+- `npm run validate` 改用 `scripts/validate-plugin.sh`：保留根目录 `CLAUDE.md`，只忽略已知的 root-context 警告；其他警告和错误仍会使校验失败。
+
 ## [0.4.1] - 2026-11-26
 
 ### Added

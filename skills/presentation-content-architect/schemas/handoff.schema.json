@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "content_file",
+    "target_renderer",
+    "readiness",
+    "unresolved",
+    "slides"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "1.0"
+    },
+    "content_file": {
+      "type": "string"
+    },
+    "target_renderer": {
+      "type": "string"
+    },
+    "readiness": {
+      "enum": [
+        "ready",
+        "needs_review",
+        "blocked"
+      ]
+    },
+    "adapter": {
+      "type": "object"
+    },
+    "unresolved": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "slides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "slide_id",
+          "role",
+          "title",
+          "visual_intent",
+          "speaker_notes_present"
+        ],
+        "properties": {
+          "slide_id": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "chapter": {
+            "type": "string"
+          },
+          "visual_intent": {
+            "type": "string"
+          },
+          "speaker_notes_present": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

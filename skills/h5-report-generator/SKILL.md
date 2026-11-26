@@ -54,12 +54,12 @@ skills/h5-report-generator/
 1. 逐页读取 `slide_id`、`role`、`title`、`Takeaway`、`Visible`、`Evidence`、`Visual Intent`、`Speaker Notes`。有 `handoff.json` 时核对 `slides[].slide_id` 顺序与 Markdown 一致；冲突时停下来问用户。
 2. **发布门禁**：`handoff.json` 的 `readiness` 不是 `ready`，或 `presentation.md` 的 `status` 不是 `READY` 时，只输出预览并列出未决/未核实项，不宣称可发布（`needs_review` 与 `blocked` 都属于此类）。
 3. 保留页面顺序、已确认事实和核心主张，不重复发散生成内容。内容页数低于模板最低 5 页时先征求用户确认。
-4. 主题优先级：`handoff.json` 的 `adapter.theme` > 用户明确指定 > 默认 `light-gradient`。此模式下只跳过 Step 0 的页数/章节/标题/胶囊规划，主题、模板读取和时间预算照旧。
+4. 主题优先级：`handoff.json` 的 `adapter.theme` > 用户明确指定 > 默认 `light-gradient`。此模式下只跳过 Step 0 的页数/章节/标题/胶囊规划，主题、模板读取和时间预算照旧。汇报时长以 `presentation.md` 的 `duration_minutes`（或用户明确输入）为准；既没有明确 deck 时长、也没有 `duration_minutes` 时才按会议时长套用 Step 0 的常规默认值。
 5. 字段映射：封面 Takeaway / Visible 中的结论胶囊 → `{{COVER_CHIPS}}`（2–3 条，与收尾呼应）；目录章节结论 → `.toc-concl`、章节要点 → `.toc-points`（每格 ≥2 条，作为 `.toc-concl` 的兄弟元素）；内容页 `title` → `.content-title`、`Takeaway` → `.lead-bar`、`Visible` → 展开区证据组件；收尾 Takeaway → `{{CLOSE_LINES}}`（≤3 条，呼应封面）。
 6. `Speaker Notes` → `window.SPEAKER_NOTES`：用该页 `#` 结论标题合成必填的 `title`；`Purpose/Talk/Transition/Minutes/Cue/Interaction/Fallback` 映射为 `purpose/talk/transition/minutes/cue/interaction/fallback`，`id` 与对应页面的 `data-slide-id` 完全一致，`talk` 保持 2–4 条、每条 ≤40 字。
 7. `Evidence` 中未验证数据和假设必须在观众可见区域标明限定条件，不得只藏在备注中。
 8. `Visual Intent` 是语义建议，选用原有卡片、表格、图表、时间轴等组件；不要把 Markdown 原文直接作为 HTML。
-9. 校验时把 `presentation.md` 的 `duration_minutes` 传给 `validate_deck.py --target-minutes`。遇到溢出或不支持组件，反馈 `slide_id / issue / available_space / proposed_revision`，不得静默删除关键论据。
+9. 校验时把确定的 deck 汇报时长（不是会议总长）传给 `validate_deck.py --target-minutes`。遇到溢出或不支持组件，反馈 `slide_id / issue / available_space / proposed_revision`，不得静默删除关键论据。
 10. 完成上述适配后继续执行下方 Step 1–5、`validate_deck.py` 和浏览器验收。
 
 ---
@@ -70,18 +70,18 @@ skills/h5-report-generator/
 
 ### Step 0: 需求分析
 
-1. 确认页面数量与章节结构：**最少 5 页**（封面 + 目录 + ≥2 内容页 + 收尾），完整汇报通常 **8–30 页**，建议 3–4 章；用户指定的页数优先于本建议
+1. 确认页面数量与章节结构：**最少 5 页**（封面 + 目录 + ≥2 内容页 + 收尾），建议 3–4 章；用户明确给出的页数、汇报时长或内容要求优先于以下常规默认值，不要用会议总长覆盖这些明确输入。
 
-   用户只给了时长、没给页数时，按 **每页约 2 分钟**倒推（含封面/目录/收尾）：
+   **先定汇报时长，再定页数。** 用户只给会议时长、没明确给出 deck 讲述时长时，按会议时长的常规默认值倒推；剩余会议时间留给 Q&A，不塞进 deck：
 
-   | 汇报时长 | 页数 | 典型结构 |
-   |---------|------|---------|
-   | 10 分钟 | 6–8 | 封面 + 目录 + 4 内容页 + 收尾 |
-   | 20 分钟 | 10–12 | 封面 + 目录 + 8–9 内容页（3 章）+ 收尾 |
-   | 30 分钟 | 14–16 | 4 章，每章 3–4 页 |
-   | 45 分钟 | 20–24 | 4–5 章，留 1–2 页给问答 |
+   | 会议时长 | 默认 deck 汇报时长 | 页数 | 典型结构 |
+   |---------|------------------|------|---------|
+   | 30 分钟 | 25 分钟 | 8–10 | 封面 + 目录 + 5–7 内容页（2–3 章）+ 收尾 |
+   | 60 分钟 | 50 分钟 | 12–16 | 封面 + 目录 + 9–13 内容页（3–4 章）+ 收尾 |
 
-   > 页数倒推出来后，把每页 `minutes` 加起来应当 ≤ 时长的 90%——剩下的 10% 留给停顿、
+   > 表格只处理"没有明确 deck 时长"的常规场景。用户说"讲 45 分钟"或指定页数时，按用户输入评估，不套用上表页数；只有在用户没说清楚时才追问。此时汇报时长照用户说的用，页数仍按"少而完整"控制：25 分钟级最多 10 页，50 分钟级最多 16 页，不足 25 分钟最多 8 页；用户明确给了页数则直接采用。`duration_minutes`（如有）和 `--target-minutes` 使用 deck 汇报时长，不是会议总长。
+   >
+   > 页数倒推出来后，把每页 `minutes` 加起来应当 ≤ 汇报时长的 90%——剩下的 10% 留给停顿、
    > 提问和现场意外。`validate_deck.py --target-minutes` 会自动拦这一条。
 2. **确认主题**：默认 `light-gradient`（浅蓝，不指定就用它）。用户若描述"牛皮纸/复古/杂志/手作感"→ `kraft-paper`；"沙色/克制/高级/安静"→ `dune`；"极简/黑白/印刷感/锐利"→ `ink-classic`。用户没有偏好时**不要**主动换主题，直接默认
 3. **规划页面清单**：按顺序列出每页 `id`、`data-slide-id` 与标题，**每页标题先写成结论句**（如"19项变更分级收口，15项11.05前投产"），而不是话题词（如"需求变更"）

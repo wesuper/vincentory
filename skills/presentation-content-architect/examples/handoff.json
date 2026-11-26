@@ -1,0 +1,65 @@
+{
+  "contract_version": "1.0",
+  "content_file": "presentation.md",
+  "target_renderer": "generic",
+  "adapter": {
+    "name": "h5-report-generator",
+    "theme": "light-gradient",
+    "mapping_status": "supported_semantics_not_rendered"
+  },
+  "readiness": "needs_review",
+  "slides": [
+    {
+      "slide_id": "cover",
+      "role": "COVER",
+      "title": "AI 知识管理：先验证，再规模化",
+      "chapter": "intro",
+      "visual_intent": "cover",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "toc",
+      "role": "AGENDA",
+      "title": "三个问题决定 AI 知识管理是否值得投入",
+      "chapter": "intro",
+      "visual_intent": "agenda",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "s01",
+      "role": "PROBLEM",
+      "title": "知识分散可能使已有经验难以被复用",
+      "chapter": "problem",
+      "visual_intent": "three-cards",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "s02",
+      "role": "SOLUTION",
+      "title": "场景化知识支持值得通过试点验证",
+      "chapter": "solution",
+      "visual_intent": "three-cards",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "s03",
+      "role": "ROADMAP",
+      "title": "用基线与退出条件决定是否扩展",
+      "chapter": "validation",
+      "visual_intent": "timeline",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "end",
+      "role": "CTA",
+      "title": "建议批准一个有边界的试点设计",
+      "chapter": "close",
+      "visual_intent": "closing",
+      "speaker_notes_present": true
+    }
+  ],
+  "unresolved": [
+    "需要确认试点业务场景和数据依据",
+    "尚未完成 HTML 渲染验收"
+  ]
+}
