@@ -177,7 +177,7 @@ claude plugin validate . --strict          # 或 npm run validate
 - **V4 沟通效果闭环**：加入洞察挖掘、持续注意力、三视角压力测试、五维效果计划和真实观察复盘；效果计划与观察独立记录，没有真实观察时为 `unknown`，不把模型自评当现场效果。
 - **价值融合与发布整理**：以稳定 SOP 为主体按需吸收增强，取消高级扩展对所有普通稿的强制绑定；协议不再保留 `contract_version` 兼容字段，旧生成器与历史档案移除，HTML/CSS/JS 模板与主题移入 `assets/`，测试移入 `tests/`。
 
-设计决策、验证历史与未验证边界见 [升级记录](docs/upgrade-notes.md)。
+设计决策、验证历史与未验证边界见 [CHANGELOG.md](../CHANGELOG.md) 的 `[0.6.0]` 发布段。
 
 实际 Agent 行为评估见各 Skill 的 `references/evaluation.md`。静态测试不代替浏览器及真实听众验证。
 
