@@ -1,6 +1,10 @@
-# Skills 目录
+# Presentation Skills
 
-本目录是 vincentory 所有 Agent Skill 的唯一来源：**一个子目录一个 Skill**，可单独安装、单独测试，必要时通过显式契约组合。本文件说明目录约定、增删改流程，以及当前两个演示类 Skill 如何单独使用或组合成一条从内容到投屏的工作流；每个 Skill 的触发条件、分步步骤和限制仍以它自己的 `SKILL.md` 为准。
+两个独立 Skill，按任务选择，也可通过统一内容协议联用。本目录是 vincentory 所有 Agent Skill 的唯一来源：**一个子目录一个 Skill**，可单独安装、单独测试，必要时通过显式契约组合。本文件说明目录约定、增删改流程，以及当前两个演示类 Skill 如何单独使用或组合成一条从内容到投屏的工作流；每个 Skill 的触发条件、分步步骤和限制仍以它自己的 `SKILL.md` 为准。
+
+## 安装
+
+将需要的 Skill 目录放入 Agent 使用的 skills 目录；名称与 `SKILL.md` frontmatter 一致。两个目录均可独立使用。联用时通过六文件内容交接，不跨目录调用内部实现。
 
 ## 目录约定
 
@@ -18,17 +22,19 @@
 skills/<skill-name>/
   SKILL.md        # 必需：入口、边界、分流、步骤、完成门禁
   README.md       # 可选：维护者视角的说明与运行命令
-  references/     # 可选：按需加载的方法、手册、契约
-  scripts/        # 可选：确定性校验与生成脚本
-  schemas/        # 可选：机器可读契约
-  templates/      # 可选：可复用的页面/项目骨架
-  examples/       # 可选：最小可运行示例，供回归测试
+  references/     # 可选：按需加载的方法、手册、契约和设计指南
+  scripts/        # 可选：确定性解析、封存、校验和生成脚本
+  schemas/        # 可选：机器可读的内容交接结构
+  assets/         # 可选：H5 HTML/CSS/JS 模板与主题资源
+  examples/       # 可选：合成、可运行的输入及输出结构示例
+  tests/          # 可选：独立自动化测试及运行入口
 ```
 
 维护约定：
 
 - `SKILL.md` 保持精简：入口、边界、分流、分步流程、完成门禁。长方法、场景手册、协议细节放 `references/`，由正文按需引用。
 - 脚本必须确定性、可重复、可离线运行，优先使用标准库；校验器应能独立执行，不依赖 Agent 的临场判断。
+- 测试从各自 Skill 根目录运行 `python3 tests/run.py`。同时安装时，内容侧测试检查两份共享契约、schema、解析器与示例完全一致；独立安装时跳过跨目录检查。H5 改动主题后运行 `python3 scripts/theme_contrast.py .`，改动样式或引擎后运行 `python3 scripts/sync-template.py .`。
 - `examples/` 是校验与回归测试的真实输入，保持最小可用；不放宣传材料、真实客户数据或敏感信息。
 - `schemas/` 与 `references/` 中的契约是对外接口。改字段时同步更新 schema、解析器、测试和 `CHANGELOG.md`。
 - 不写入密钥、令牌、邮箱或环境特定值。
@@ -99,13 +105,45 @@ description: <何时触发 + 能做什么>
 | 适合 | 领导决策、售前、技术分享、晋升答辩、补论证或重排演示逻辑 | 已有内容、H5 投屏、换主题、局部改版 |
 | 产物 | `presentation.md`、`outline.md`、`claim-map.json`、`sources.md`、`handoff.json`、`working-state.json` | `index.html`、`render-input.json`、`render-review.json` |
 
-两者通过 Presentation Content Contract 1.1 联用，也可各自独立安装；共享的契约、schema 与解析器各带一份，仓库内由 `test_contract_parity.py` 守住逐字节一致。
+两者通过统一的内容协议联用，也可各自独立安装；共享的契约、schema 与解析器各带一份，仓库内由 `tests/test_contract_parity.py` 守住逐字节一致。
 
-### 三种进入方式
+### 推荐的三种使用方式
 
-- **A 内容共创**（只用内容技能）：`使用 presentation-content-architect。我要面向<听众>做<场景>汇报：先从听众的决策标准反推主线，澄清关键缺口；每页带来可核查的新判断依据，视觉关系优先，详细推理与异议放备注。输出完整内容真源。`
-- **B 已有稿转 H5**（只用渲染技能）：`使用 h5-report-generator 将现有材料生成可投屏的 H5。先检查空洞、重复、缺证据与关键限制；不要擅自添加事实或更改已确认的主张。按信息关系选择图表或图示，完成保真和浏览器核查，有问题先回传修订。`
-- **C 从想法到演示**（组合）：`组合使用两个 Skill：先完成听众目标、证据论证、逐页质量评审与讲稿，再通过共享契约交接 H5；缺内容或不适配视觉的页面回到内容真源修订，不重复采访、不虚构数据；最后完成静态、保真、逐页视觉与演讲功能验收。`
+以下提示词可直接复制，按实际听众、场景和材料调整。
+
+**场景 A：只有想法，需要深度共创。单独使用内容架构师。**
+
+```text
+使用 presentation-content-architect。
+
+我准备进行一次面向公司领导的技术战略汇报，但目前只有一些零散想法。
+
+请先从听众的评价标准和决策需求反推汇报目标，通过苏格拉底式提问与我逐步澄清。不要急于生成 PPT，也不要为了使用方法论而使用方法论。
+
+最终形成经得起质疑的论证结构、逐页内容、演讲备注、证据台账和潜在答辩问题。
+```
+
+**场景 B：内容已经成熟，只需要视觉化。单独使用 H5 生成器。**
+
+```text
+使用 h5-report-generator，将我提供的现有汇报材料转换为可投屏的 H5 演示文稿。
+
+不要重新进行内容策划，也不要擅自修改核心观点、数据和结论。根据每页的信息任务选择合适的视觉表达方式，保留演讲者备注及必要的证据限定。
+
+完成后执行内容保真和页面可用性校验。
+```
+
+**场景 C：从零散想法到最终演示。组合使用两份 Skill。**
+
+```text
+组合使用 presentation-content-architect 和 h5-report-generator。
+
+第一阶段：根据汇报场景、听众、预期结果和现有材料，协助我完成问题澄清、论证设计、内容生成及反方预演。
+
+第二阶段：内容达到交接条件后，通过共享内容契约交给 H5 生成器，根据内容语义选择页面模板，生成最终可演示的 H5 文件。
+
+两阶段共享同一内容真源，不重复提问，不擅自修改已经确认的事实。如果渲染过程中发现内容问题，返回内容阶段修订，再重新验证。
+```
 
 ### 主线与质量标准
 
@@ -114,7 +152,7 @@ description: <何时触发 + 能做什么>
 - 每页先问：删去本页，听众会失去什么具体判断依据？空话、重复、占位不应独占页面；封面、过渡、单一判断页有意简洁时，在评审依据中说明理由。
 - 先定信息关系再选组件：真实数量/趋势才用数据图，机制/流程/架构才用关系图，精确对比才用矩阵。无数据不画虚假数量，无顺序不加因果箭头，不把图表比例当 KPI。
 - `Visible` 保留结论、关键数据、证据标签和必要限制；`Talk` 是现场提示，`Delivery` 展开口述，`Fallback` 准备追问与备用回答。关键证据、风险或口径不能只藏在备注。
-- 新稿在 `working-state.json` 记录 `quality_profile: presentation-v2.1` 与逐页 `slide_quality`；未逐页评审的旧稿在 H5 中只能作安全预览。H5 在 `render-review.json` 记录 `content_quality` 与逐页 `page_reviews`，语义评审、视觉检查与实际浏览器检查须分别通过。
+- 新稿在 `working-state.json` 记录逐页 `slide_quality`（`quality_profile` 为稿件自身的版本标识，不是 Skill 发布版本号）；未逐页评审的旧稿在 H5 中只能作安全预览。H5 在 `render-review.json` 记录 `content_quality` 与逐页 `page_reviews`，语义评审、视觉检查与实际浏览器检查须分别通过。
 - 视觉主体紧随判断，避免小表格漂浮在空白中央；不靠填字、虚假数字、装饰或拉伸空卡消灭合理留白。
 - 导航是工具不是内容：右下页码与翻页控件低对比、透明、不使用胶囊底或常态阴影；悬停、键盘焦点与触屏仍可操作，且不遮挡正文。
 
@@ -122,14 +160,26 @@ description: <何时触发 + 能做什么>
 
 ```bash
 claude plugin validate . --strict          # 或 npm run validate
-(cd skills/presentation-content-architect && python3 -m unittest discover -s scripts -p 'test*.py')
-(cd skills/h5-report-generator && python3 -m unittest discover -s scripts -p 'test_pipeline.py')
+(cd skills/presentation-content-architect && python3 tests/run.py)
+(cd skills/h5-report-generator && python3 tests/run.py)
 ```
 
 - `plugin validate` 只检查 `skills` 数组中的路径存在，**不校验** `SKILL.md` 的 frontmatter；`name` 与 `description` 需人工核对。
-- 测试必须在 Skill 根目录内运行：目录名含连字符，从仓库根用 `discover -s skills/<skill-name>/scripts` 会因不可导入而失败。
-- 存在共享契约副本时，一致性由 `presentation-content-architect/scripts/test_contract_parity.py` 守住：它比对共享契约/schema/解析器与 H5 侧的示例副本，两份 Skill 同时存在时漂移即失败，单独安装时跳过。手工核对仍可用 `diff -rq`。
+- 测试必须在 Skill 根目录内运行；`tests/run.py` 会加载该 Skill 的 `scripts/` 模块，目录名含连字符时从仓库根直接发现会失败。
+- 存在共享契约副本时，一致性由 `presentation-content-architect/tests/test_contract_parity.py` 守住：它比对共享契约/schema/解析器与 H5 侧的示例副本，两份 Skill 同时存在时漂移即失败，单独安装时跳过。手工核对仍可用 `diff -rq`。
 - 本地开发可用 `./scripts/link-skills.sh` 把已发布 Skill 链接到 `~/.claude/skills/`。
+
+## 能力演进与维护记录
+
+当前 SOP 以各 Skill 的 `SKILL.md` 为准；以下变更背景只用于维护回溯，不作为运行时协议或旧格式兼容承诺：
+
+- **V3 听众结果设计**：从作者表达转向听众任务，加入认知障碍、逐页认知旅程、核心/深挖路线、结构化问答、预演与恢复路径；复杂稿启用扩展后必须完整校验。
+- **V4 沟通效果闭环**：加入洞察挖掘、持续注意力、三视角压力测试、五维效果计划和真实观察复盘；效果计划与观察独立记录，没有真实观察时为 `unknown`，不把模型自评当现场效果。
+- **价值融合与发布整理**：以稳定 SOP 为主体按需吸收增强，取消高级扩展对所有普通稿的强制绑定；协议不再保留 `contract_version` 兼容字段，旧生成器与历史档案移除，HTML/CSS/JS 模板与主题移入 `assets/`，测试移入 `tests/`。
+
+设计决策、验证历史与未验证边界见 [CHANGELOG.md](../CHANGELOG.md) 的 `[0.6.0]` 发布段。
+
+实际 Agent 行为评估见各 Skill 的 `references/evaluation.md`。静态测试不代替浏览器及真实听众验证。
 
 ## Skill 编写参考
 

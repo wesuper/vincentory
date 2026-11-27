@@ -2,20 +2,16 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "required": [
-    "contract_version",
     "content_file",
     "target_renderer",
     "readiness",
     "unresolved",
-    "slides"
+    "slides",
+    "revision",
+    "content_sha256",
+    "intent"
   ],
   "properties": {
-    "contract_version": {
-      "enum": [
-        "1.0",
-        "1.1"
-      ]
-    },
     "content_file": {
       "type": "string"
     },
@@ -47,7 +43,8 @@
           "role",
           "title",
           "visual_intent",
-          "speaker_notes_present"
+          "speaker_notes_present",
+          "chapter"
         ],
         "properties": {
           "slide_id": {
@@ -117,32 +114,36 @@
           "minLength": 1
         }
       }
+    },
+    "experience_profile": {
+      "const": "audience-journey"
+    },
+    "experience_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     }
   },
   "allOf": [
     {
       "if": {
-        "properties": {
-          "contract_version": {
-            "const": "1.1"
+        "anyOf": [
+          {
+            "required": [
+              "experience_profile"
+            ]
+          },
+          {
+            "required": [
+              "experience_sha256"
+            ]
           }
-        }
+        ]
       },
       "then": {
         "required": [
-          "revision",
-          "content_sha256",
-          "intent"
-        ],
-        "properties": {
-          "slides": {
-            "items": {
-              "required": [
-                "chapter"
-              ]
-            }
-          }
-        }
+          "experience_profile",
+          "experience_sha256"
+        ]
       }
     }
   ]

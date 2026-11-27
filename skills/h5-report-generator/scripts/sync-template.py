@@ -18,6 +18,7 @@
   python3 scripts/sync-template.py .          # 在 skill 根目录执行
 """
 import os
+import json
 import re
 import sys
 
@@ -46,8 +47,8 @@ def need(text, anchor, where):
 
 
 def inject_style(html, root):
-    css = read(os.path.join(root, 'templates/deck/style.css')).strip()
-    theme = read(os.path.join(root, f'templates/deck/themes/{DEFAULT_THEME}.css')).strip()
+    css = read(os.path.join(root, 'assets/deck/style.css')).strip()
+    theme = read(os.path.join(root, f'assets/deck/themes/{DEFAULT_THEME}.css')).strip()
 
     # 槽位顺序固定：STYLE_CSS 在前，THEME_CSS 在后，同处一个 <style> 里。
     i = need(html, STYLE_CSS, 'html')
@@ -68,7 +69,7 @@ def inject_style(html, root):
 
 
 def inject_script(html, root):
-    js = read(os.path.join(root, 'templates/deck/script.js')).strip()
+    js = read(os.path.join(root, 'assets/deck/script.js')).strip()
     start = need(html, SCRIPT_JS, 'html') + len(SCRIPT_JS)
     start = html.index('\n', start) + 1
     end = html.index('</script>', start)
@@ -114,7 +115,7 @@ def check(html, root):
 
     # 期望集合不能来自「当前主题文件里有什么」——删掉一个令牌，期望集也会跟着缩小，
     # 永远抓不到。基准取四个主题文件的并集，再逐个校验完整性与主题间一致性。
-    theme_dir = os.path.join(root, 'templates/deck/themes')
+    theme_dir = os.path.join(root, 'assets/deck/themes')
     themes = {}
     for fn in sorted(os.listdir(theme_dir)):
         if fn.endswith('.css'):
@@ -128,7 +129,7 @@ def check(html, root):
                 problems.append(f'主题 {name} 缺少令牌：' + ', '.join(absent))
 
     skin = themes.get(DEFAULT_THEME, set())
-    struct_css = read(os.path.join(root, 'templates/deck/style.css'))
+    struct_css = read(os.path.join(root, 'assets/deck/style.css'))
     presenter = re.search(r'\.presenter\s*\{[^}]*\}', struct_css)
     outside = struct_css.replace(presenter.group(0), '') if presenter else struct_css
     leaked = set(re.findall(r'(--[a-z0-9-]+)\s*:', outside)) & skin
@@ -142,10 +143,18 @@ def check(html, root):
     if missing:
         problems.append('皮肤段缺少令牌（观众页会掉回浏览器默认值）：' + ', '.join(sorted(missing)))
 
-    # 备注写合法 JSON（双引号），旧样例可能是 JS 字面量（单引号）；两种都认，
-    # 但只取 SPEAKER_NOTES 数组内部的 id，避免误抓页面里其它地方的同名键。
-    notes_block = re.search(r'window\.SPEAKER_NOTES\s*=\s*(\[[\s\S]*?\n\s*\]);', html)
-    notes = re.findall(r'''\bid["']?\s*:\s*['"]([^'"]+)['"]''', notes_block.group(1)) if notes_block else []
+    # Read strict JSON only; do not execute JavaScript or accept object literals.
+    match = re.search(r'window\.SPEAKER_NOTES\s*=\s*', html)
+    notes = []
+    try:
+        if not match:
+            raise ValueError('missing notes')
+        value, _ = json.JSONDecoder().raw_decode(html[match.end():])
+        if not isinstance(value,list) or any(not isinstance(item,dict) or not isinstance(item.get('id'),str) for item in value):
+            raise ValueError('invalid notes')
+        notes = [item['id'] for item in value]
+    except ValueError:
+        problems.append('备注必须是合法 JSON 数组')
     slides = re.findall(r'data-slide-id="([^"]+)"', html)
     if sorted(notes) != sorted(slides):
         problems.append(f'备注 id 与 data-slide-id 不匹配：notes={sorted(notes)} slides={sorted(slides)}')
@@ -155,7 +164,7 @@ def check(html, root):
 
 def main():
     root = sys.argv[1] if len(sys.argv) > 1 else '.'
-    path = os.path.join(root, 'templates/h5-report-template.html')
+    path = os.path.join(root, 'assets/h5-report-template.html')
 
     html = force_theme_attr(read(path))
     html = inject_style(html, root)

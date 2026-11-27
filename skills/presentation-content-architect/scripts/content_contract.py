@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared 1.0/1.1 content parser and mechanical gate. Python 3.9+, stdlib only."""
+"""Shared content parser and mechanical gate. Python 3.10+, stdlib only."""
 import hashlib
 import json
 import math
@@ -98,13 +98,13 @@ def parse(path):
 
 
 
-QUALITY_PROFILE = 'presentation-v2.1'
+QUALITY_PROFILE = 'slide-review'
 QUALITY_FIELDS = ('audience_question','information_gain','support','visual_reason','notes_gain','basis')
 
 def review_slide_quality(slides, state):
     """Check review records + obvious content defects, not actual persuasiveness."""
     if not isinstance(state,dict) or not ('quality_profile' in state or 'slide_quality' in state):
-        return {'status':'not_reviewed','issues':['missing v2.1 per-slide content review']}
+        return {'status':'not_reviewed','issues':['missing per-slide content review']}
     issues=[]
     if state.get('quality_profile')!=QUALITY_PROFILE:
         issues.append('invalid quality_profile')
@@ -147,52 +147,174 @@ def review_slide_quality(slides, state):
     return {'status':'needs_revision' if issues else 'reviewed','issues':issues}
 
 
+
+# Optional audience journey and short route.
+EXPERIENCE_PROFILE = 'audience-journey'
+SCENE_REQUIREMENTS = {'executive_proposal': ('decision_scope', 'business_value', 'options_tradeoff', 'validation_exit'), 'architecture_review': ('constraints', 'alternatives', 'mechanism', 'failure_modes', 'verification'), 'risk_change': ('change_trigger', 'impact_scope', 'risk_controls', 'go_no_go_rollback', 'owner_escalation'), 'expectation_management': ('baseline_commitment', 'delta_forecast', 'cause_uncertainty', 'replan_decision', 'next_update'), 'progress_outcome': ('baseline_target', 'actual_impact', 'attribution', 'remaining_gap', 'next_investment'), 'promotion_defense': ('level_criteria', 'challenge_scope', 'personal_contribution', 'impact_evidence', 'leverage_growth'), 'technical_deep_dive': ('entry_problem', 'mental_model', 'mechanism', 'reproduction', 'failure_boundary', 'transfer'), 'team_announcement': ('why_change', 'who_is_affected', 'before_after', 'execution_support', 'understanding_check'), 'cross_team_alignment': ('shared_goal', 'interest_tradeoff', 'interfaces_dependencies', 'ownership', 'disagreement_resolution'), 'incident_review': ('impact_timeline', 'causal_evidence', 'system_factors', 'corrective_actions', 'effectiveness_check'), 'technical_strategy': ('context_drivers', 'strategic_choices', 'tradeoff_non_goals', 'staged_investment', 'signals_exit'), 'customer_solution': ('customer_scenario', 'fit_gap', 'integration_security', 'validation_acceptance', 'next_step'), 'general': ('audience_problem', 'specific_value', 'support_boundary', 'appropriate_next_step')}
+AUDIENCE_FIELDS = ('authority','prior_knowledge','stakes','barrier','evidence_threshold','secondary_audience','basis')
+OUTCOME_FIELDS = ('recall','observable_signal','check_method','next_step','success_boundary','follow_up','non_goal')
+OPENING_FIELDS = ('why_now','promise','tension')
+JOURNEY_FIELDS = ('audience_shift','question','listen_cue','check','recovery','basis')
+REHEARSAL_FIELDS = ('recall','objection','compression','synchrony','action')
+BEATS = {'orient','tension','explain','prove','decide','practice','close','appendix','transition'}
+
+def experience_digest(handoff, state):
+    """Bind outcome plan and review to current content/intent; not a signature or fact check."""
+    payload = {k:handoff.get(k) for k in ('content_sha256','intent','experience_profile')}
+    payload.update({k:state.get(k) for k in ('experience','quality_profile','slide_quality','review')})
+    raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',',':'), allow_nan=False)
+    return hashlib.sha256(raw.encode('utf-8')).hexdigest()
+
+def review_experience(slides, state, handoff=None):
+    """Check outcome-plan completeness and consistency, never infer audience approval."""
+    h = handoff if isinstance(handoff,dict) else {}
+    st = state if isinstance(state,dict) else {}
+    if not ('experience_profile' in h or 'experience_sha256' in h or 'experience' in st):
+        return {'status':'not_applicable','issues':[]}
+    issues = []
+    def require_text(obj, keys, label):
+        for k in keys:
+            if not isinstance(obj,dict) or not text(obj.get(k)):
+                issues.append(f'{label}: missing {k}')
+    def known_ids(value):
+        return strings(value) and bool(value) and len(value)==len(set(value)) and set(value)<=set(ids)
+    ids = [s['slide_id'] for s in slides]
+    if h.get('experience_profile') != EXPERIENCE_PROFILE:
+        issues.append('invalid/missing experience_profile')
+    e = st.get('experience')
+    if not isinstance(e,dict):
+        return {'status':'needs_revision','issues':issues+['missing experience object']}
+    scene = e.get('scene')
+    if not isinstance(scene,str) or scene not in SCENE_REQUIREMENTS:
+        issues.append('invalid experience scene'); scene = 'general'
+    secondary = e.get('secondary_scenes',[])
+    if not strings(secondary) or any(x not in SCENE_REQUIREMENTS or x==scene for x in secondary) or len(set(secondary))!=len(secondary):
+        issues.append('invalid secondary_scenes'); secondary=[]
+    require_text(e.get('audience'), AUDIENCE_FIELDS, 'audience')
+    require_text(e.get('outcome'), OUTCOME_FIELDS, 'outcome')
+    require_text(e.get('opening'), OPENING_FIELDS, 'opening')
+    journey = e.get('journey')
+    if not isinstance(journey,dict):
+        issues.append('journey must be an object'); journey={}
+    if set(journey)!=set(ids): issues.append('journey ids differ from slides')
+    core=[]
+    for sid in ids:
+        j=journey.get(sid)
+        require_text(j,JOURNEY_FIELDS,f'{sid} journey')
+        if not isinstance(j,dict): continue
+        if j.get('beat') not in BEATS: issues.append(f'{sid}: invalid journey beat')
+        if j.get('priority') not in ('core','deepening'): issues.append(f'{sid}: invalid journey priority')
+        elif j['priority']=='core': core.append(sid)
+    if not core: issues.append('short route must retain at least one core slide')
+    checks=e.get('scene_checks')
+    if not isinstance(checks,dict):
+        issues.append('scene_checks must be object'); checks={}
+    needed={f'{sc}.{k}' for sc in [scene]+secondary for k in SCENE_REQUIREMENTS[sc]}
+    if set(checks)!=needed: issues.append('scene_checks keys differ from required scene checklist')
+    for key in sorted(needed):
+        c=checks.get(key)
+        require_text(c,('basis','gap_action'),key)
+        if not isinstance(c,dict):continue
+        if c.get('status') not in ('covered','proposed','unresolved'):
+            issues.append(f'{key}: invalid scene check status')
+        elif c['status']=='unresolved': issues.append(f'{key}: unresolved scene check')
+        links=c.get('slide_ids')
+        if not known_ids(links):
+            issues.append(f'{key}: missing/invalid slide_ids')
+        elif not set(links).intersection(core):
+            issues.append(f'{key}: short route loses scene checkpoint')
+    short=e.get('short_route')
+    require_text(short,('basis',),'short_route')
+    if isinstance(short,dict):
+        if short.get('slide_ids')!=core: issues.append('short_route must retain ordered core slide ids')
+        expected=sum(s['notes'].get('minutes',0) for s in slides if s['slide_id'] in core)
+        if not positive(short.get('minutes')) or abs(short['minutes']-expected)>1e-8:
+            issues.append('short_route minutes must equal sum of core slide notes')
+        if short.get('mode')!=('same' if core==ids else 'compressed'):
+            issues.append('short_route mode inconsistent with retained slides')
+    qa=e.get('qa')
+    if not isinstance(qa,list) or not qa:
+        issues.append('qa must include at least one anticipated question')
+    else:
+        for i,q in enumerate(qa):
+            require_text(q,('question','response','boundary'),f'qa[{i}]')
+            if not isinstance(q,dict) or not known_ids(q.get('slide_ids')):
+                issues.append(f'qa[{i}]: invalid slide_ids')
+    gates=e.get('rehearsal')
+    for k in REHEARSAL_FIELDS:
+        g=gates.get(k) if isinstance(gates,dict) else None
+        require_text(g,('basis',),f'rehearsal {k}')
+        if not isinstance(g,dict) or g.get('result') not in ('pass','revise','not_applicable'):
+            issues.append(f'rehearsal {k}: invalid result')
+        elif g['result']=='revise':
+            issues.append(f'rehearsal {k}: needs revision')
+    if review_slide_quality(slides,st)['status']!='reviewed':
+        issues.append('audience journey requires completed per-slide content review')
+    return {'status':'needs_revision' if issues else 'reviewed','issues':issues,
+            'scene':scene,'secondary_scenes':secondary,'core_slide_ids':core,
+            'short_minutes':sum(s['notes'].get('minutes',0) for s in slides if s['slide_id'] in core),
+            'scope':'mechanical outcome-plan review; audience response not observed'}
+
+def check_experience_binding(slides, handoff, state, status, errors):
+    declared = 'experience_profile' in handoff or 'experience_sha256' in handoff or (isinstance(state,dict) and 'experience' in state)
+    if not declared: return
+    if handoff.get('experience_profile')!=EXPERIENCE_PROFILE:
+        errors.append('invalid/missing experience_profile')
+    sealed=handoff.get('experience_sha256')
+    if not isinstance(sealed,str) or not re.fullmatch(r'[0-9a-f]{64}',sealed):
+        errors.append('missing/invalid experience_sha256')
+    if state is None: return  # existing missing-state gate handles safe preview
+    if sealed!=experience_digest(handoff,state):
+        errors.append('experience_sha256 stale; revise and reseal outcome plan')
+    quality=review_experience(slides,state,handoff)
+    if status=='READY' and quality['status']!='reviewed':
+        errors.extend(quality['issues'])
+
+
 def validate(md_path,handoff_path,state_path=None):
     meta,slides,errors=parse(md_path); h=load_json(handoff_path); state=load_json(state_path) if state_path else None
     if not isinstance(h,dict) or (state is not None and not isinstance(state,dict)): raise ValueError('handoff/state must be objects')
-    version=h.get('contract_version'); status=meta.get('status'); readiness=h.get('readiness'); ids=[s['slide_id'] for s in slides]
-    if version not in ('1.0','1.1'): errors.append('unsupported contract_version')
+    status=meta.get('status'); readiness=h.get('readiness'); ids=[s['slide_id'] for s in slides]
     if h.get('content_file')!=Path(md_path).name or not text(h.get('target_renderer')): errors.append('invalid content_file or target_renderer')
     if readiness not in ('ready','needs_review','blocked') or (status=='READY')!=(readiness=='ready'): errors.append('presentation status/readiness mismatch')
     if not strings(h.get('unresolved')): errors.append('handoff unresolved must be an array of strings')
-    listed=h.get('slides'); strict=version=='1.1'
+    listed=h.get('slides')
     if not isinstance(listed,list) or any(not isinstance(s,dict) for s in listed): errors.append('handoff slides must be object array'); listed=[]
     if ids!=[s.get('slide_id') for s in listed]: errors.append('handoff slide order differs')
     for a,b in zip(slides,listed):
-        for k in ('title','role','visual_intent')+ (('chapter',) if strict else ()):
+        for k in ('title','role','visual_intent','chapter'):
             if a[k]!=b.get(k): errors.append(f'{a["slide_id"]}: handoff {k} differs')
         if b.get('speaker_notes_present') is not True: errors.append(f'{a["slide_id"]}: speaker_notes_present must be true')
-    if status=='READY' or strict:
-        if state is None: errors.append('working-state.json required for READY or 1.1')
+    if state is None: errors.append('working-state.json required for formal handoff')
     if state is not None:
         if STAGE_STATUS.get(state.get('stage'))!=status: errors.append('stage/status mismatch')
         if not strings(state.get('open_questions')): errors.append('open_questions must be an array of strings')
     if status=='READY':
         if h.get('unresolved'): errors.append('READY requires empty handoff unresolved')
         if state and state.get('open_questions'): errors.append('READY requires empty working-state open_questions')
-    if strict:
-        rev=h.get('revision')
-        if type(rev) is not int or rev<1 or h.get('content_sha256')!=digest(md_path): errors.append('revision or content_sha256 invalid/stale; seal current revision')
-        intent=h.get('intent')
-        for k in ('scene','primary_audience','current_belief','desired_belief','desired_action','success_signal'):
-            if not isinstance(intent,dict) or not text(intent.get(k)): errors.append(f'intent missing {k}')
-        if state is not None:
-            if state.get('revision')!=rev: errors.append('state/handoff revision mismatch')
-            if state.get('open_questions')!=h.get('unresolved'): errors.append('state open_questions / handoff unresolved mismatch')
-            for k,typ in [('confirmed',dict),('assumptions',list),('decision_log',list),('slide_maturity',dict)]:
-                if not isinstance(state.get(k),typ): errors.append(f'invalid state {k}')
-            if isinstance(state.get('slide_maturity'),dict) and set(state['slide_maturity'])!=set(ids): errors.append('slide_maturity ids differ')
-            if not strings(state.get('limitations')): errors.append('limitations must be string array')
-            review=state.get('review',{})
-            for k in GATES:
-                gate=review.get(k,{}) if isinstance(review,dict) else {}
-                if not isinstance(gate,dict) or gate.get('result') not in ('pass','revise','not_applicable') or not text(gate.get('basis')): errors.append(f'invalid review gate {k}')
-                elif status=='READY' and gate['result']=='revise': errors.append(f'READY review gate {k} needs revision')
-        check_sources(Path(md_path).parent,slides,errors)
-        if state is not None and ('quality_profile' in state or 'slide_quality' in state):
-            quality=review_slide_quality(slides,state)
-            if status=='READY' and quality['status']!='reviewed':
-                errors.extend(quality['issues'])
+    rev=h.get('revision')
+    if type(rev) is not int or rev<1 or h.get('content_sha256')!=digest(md_path): errors.append('revision or content_sha256 invalid/stale; seal current revision')
+    intent=h.get('intent')
+    for k in ('scene','primary_audience','current_belief','desired_belief','desired_action','success_signal'):
+        if not isinstance(intent,dict) or not text(intent.get(k)): errors.append(f'intent missing {k}')
+    if state is not None:
+        if state.get('revision')!=rev: errors.append('state/handoff revision mismatch')
+        if state.get('open_questions')!=h.get('unresolved'): errors.append('state open_questions / handoff unresolved mismatch')
+        for k,typ in [('confirmed',dict),('assumptions',list),('decision_log',list),('slide_maturity',dict)]:
+            if not isinstance(state.get(k),typ): errors.append(f'invalid state {k}')
+        if isinstance(state.get('slide_maturity'),dict) and set(state['slide_maturity'])!=set(ids): errors.append('slide_maturity ids differ')
+        if not strings(state.get('limitations')): errors.append('limitations must be string array')
+        review=state.get('review',{})
+        for k in GATES:
+            gate=review.get(k,{}) if isinstance(review,dict) else {}
+            if not isinstance(gate,dict) or gate.get('result') not in ('pass','revise','not_applicable') or not text(gate.get('basis')): errors.append(f'invalid review gate {k}')
+            elif status=='READY' and gate['result']=='revise': errors.append(f'READY review gate {k} needs revision')
+    check_sources(Path(md_path).parent,slides,errors)
+    if state is not None and (status=='READY' or 'quality_profile' in state or 'slide_quality' in state):
+        quality=review_slide_quality(slides,state)
+        if status=='READY' and quality['status']!='reviewed':
+            errors.extend(quality['issues'])
+    check_experience_binding(slides,h,state,status,errors)
     return {'ok':not errors,'slides':len(slides),'planned_minutes':sum(s['notes'].get('minutes',0) for s in slides),'status':status,'readiness':readiness,'errors':errors,'gate_scope':'mechanical only; evidence, audience fit, disclosure and rendering require review'}
 
 

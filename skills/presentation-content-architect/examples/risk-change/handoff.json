@@ -1,0 +1,64 @@
+{
+  "content_file": "presentation.md",
+  "target_renderer": "generic",
+  "readiness": "ready",
+  "revision": 1,
+  "unresolved": [],
+  "intent": {
+    "scene": "合成案例：风险变更与交付预期管理",
+    "primary_audience": "技术/交付负责人，实际变更权待确认",
+    "current_belief": "未知；假设可能希望维持原全量目标",
+    "desired_belief": "理解兼容和回退未验证，不能承诺全量",
+    "desired_action": "讨论暂缓全量与验证责任、更新时间，非正式放行",
+    "success_signal": "能复述停止条件并提出负责角色和检查点"
+  },
+  "adapter": {
+    "theme": "light-gradient",
+    "profile": "adaptive"
+  },
+  "slides": [
+    {
+      "slide_id": "decision",
+      "role": "DECISION",
+      "chapter": "决策",
+      "title": "建议暂缓全量切换，先验证旧消费者兼容性",
+      "visual_intent": "decision: 对照三条变更路径及成立条件；没有风险概率或真实结果",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "delta",
+      "role": "PROBLEM",
+      "chapter": "预期",
+      "title": "原全量目标已存在兼容性疑点，新日期尚不能确定",
+      "visual_intent": "expectation: 原计划、当前认知与拟议动作的对照；不得绘制虚构日期",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "controls",
+      "role": "RISK",
+      "chapter": "风险门禁",
+      "title": "验证兼容性和回退能力之前，不扩大暴露",
+      "visual_intent": "risk: 风险—监测—处置精确映射；不捏造概率、阈值",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "mechanism",
+      "role": "DETAIL",
+      "chapter": "技术深挖",
+      "title": "兼容性验证要同时覆盖旧读者、新写者与恢复路径",
+      "visual_intent": "flow: 按构造样例、版本组合、恢复验证的明确顺序；无实际测试结果",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "next",
+      "role": "CTA",
+      "chapter": "行动",
+      "title": "确认验证责任和下一次检查点，再决定是否重排交付",
+      "visual_intent": "action: 并列角色和待确认动作，不暗示真实承诺",
+      "speaker_notes_present": true
+    }
+  ],
+  "content_sha256": "52a1e170099cb4de6ee1ac3d7acbf20bd640ff12bcdfb28bdd73158fac2d9cd5",
+  "experience_profile": "audience-journey",
+  "experience_sha256": "04aee6c33040464e4e7921b71f010e4a03a1c12ab60278aa81d7c3aba198055c"
+}

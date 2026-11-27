@@ -2,9 +2,9 @@
 """Safe, offline baseline renderer for simple Markdown. Advanced visual layouts remain agent work."""
 import argparse, html, json, re, sys
 from pathlib import Path
-from prepare_render import THEMES
+from prepare_render import THEMES, needs_preview
 
-ROOT=Path(__file__).resolve().parents[1]/'templates'/'deck'
+ROOT=Path(__file__).resolve().parents[1]/'assets'/'deck'
 
 def plain(s):
     s=re.sub(r'^\s*(?:#{1,6}\s+|[-*+]\s+|\d+[.)]\s+)', '',s)
@@ -43,7 +43,7 @@ def render_prose(raw, layout="content"):
     return '<div class="card"><ul class="card-list">'+''.join('<li class="card-item"><span class="card-item-dot"></span><span>'+esc(x)+'</span></li>' for x in lines('\n'.join(raw)))+'</ul></div>'
 
 def render_visible(s, layout="content"):
-    """Visible accepts tables, lists and headings mixed (contract 1.1). Render
+    """Visible accepts tables, lists and headings mixed (content contract). Render
     consecutive `|` rows as one table and the rest as prose, preserving source order."""
     raw=[x for x in s.splitlines() if x.strip()]
     blocks=[]; run=[]; mode=None
@@ -65,7 +65,7 @@ def render(plan):
     base=(ROOT/'skeleton.html').read_text(encoding='utf-8')
     # Replace only the original presentation region; preserve nav/engine intact.
     start=base.index('<div class="presentation">');end=base.index('<!-- 导航：',start)
-    sections=[];num=0;preview=plan.get('source_readiness')!='ready' or plan.get('content_quality',{}).get('status')!='reviewed'
+    sections=[];num=0;preview=needs_preview(plan)
     for i,s in enumerate(slides):
         sid=s['slide_id'];title=esc(s['title']);take=esc(s['takeaway']);visible=s['visible'];items=lines(visible);role=s['role']
         if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*',sid):raise ValueError('invalid slide id')
@@ -97,6 +97,11 @@ def render(plan):
         base=base.replace(slot,slot+'\n'+file.read_text(encoding='utf-8'),1)
     notes=json.dumps([s['notes'] for s in slides],ensure_ascii=False).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026').replace('\u2028','\\u2028').replace('\u2029','\\u2029')
     base=base.replace('window.SPEAKER_NOTES = [];','window.SPEAKER_NOTES = '+notes+';',1)
+    exp=plan.get('experience_quality',{})
+    if not preview and exp.get('status')=='reviewed':
+        route={'core_slide_ids':exp['core_slide_ids'],'short_minutes':round(exp['short_minutes'],6)}
+        route_json=json.dumps(route,ensure_ascii=True).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
+        base=base.replace('</body>', '<script>window.PRESENTATION_ROUTE = '+route_json+';</script>\n</body>',1)
     return base
 
 def main():

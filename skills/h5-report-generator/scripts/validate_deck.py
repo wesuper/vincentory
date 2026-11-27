@@ -126,72 +126,19 @@ def first_element_classes(fragment: str) -> set[str]:
     return class_list(m.group(0)) if m else set()
 
 
-def _extract_notes_source(html: str) -> str | None:
+def parse_notes(html: str, rep: Report) -> list[dict]:
+    """Read speaker notes as JSON data; never execute input JavaScript."""
     m = re.search(r'window\.SPEAKER_NOTES\s*=\s*', html)
-    if not m: return None
-    raw = html[m.end():]
-    try:
-        _, end = json.JSONDecoder().raw_decode(raw)
-        return raw[:end]
-    except ValueError:
-        old = re.match(r'(\[[\s\S]*?\]);', raw)
-        return old.group(1) if old else None
-
-
-def _eval_with_node(source: str) -> list | None:
-    """用 node 的 vm 在空上下文里求值对象字面量，不执行页面其它脚本。"""
-    node = shutil.which('node')
-    if not node:
-        return None
-    script = (
-        'const vm=require("vm");'
-        'let raw="";process.stdin.on("data",c=>raw+=c);'
-        'process.stdin.on("end",()=>{'
-        'try{const v=vm.runInNewContext("("+raw+")",Object.create(null),{timeout:1000});'
-        'process.stdout.write(JSON.stringify(Array.isArray(v)?v:null));}'
-        'catch(e){process.exit(3);}});'
-    )
-    try:
-        out = subprocess.run([node, '-e', script], input=source, capture_output=True,
-                             text=True, timeout=20)
-    except (OSError, subprocess.TimeoutExpired):
-        return None
-    if out.returncode != 0 or not out.stdout.strip():
-        return None
-    try:
-        value = json.loads(out.stdout)
-    except json.JSONDecodeError:
-        return None
-    return value if isinstance(value, list) else None
-
-
-def parse_notes(html: str, rep: Report, legacy_js: bool = False) -> list[dict]:
-    """解析 window.SPEAKER_NOTES。
-
-    备注是写在 HTML 里的 JS，所以对象字面量（单引号、尾逗号、注释）同样合法：
-    示例与骨架自己就是这种写法。先按 JSON 解析；失败再用 node 求值；两者都
-    不行才报错，并把真正的原因说清楚。
-    """
-    source = _extract_notes_source(html)
-    if source is None:
+    if not m:
         rep.error('找不到 window.SPEAKER_NOTES 数组：演讲者视图会整页空白')
         return []
-
     try:
-        value = json.loads(source)
-        if isinstance(value, list):
+        value, _ = json.JSONDecoder().raw_decode(html[m.end():])
+        if isinstance(value,list):
             return value
-    except json.JSONDecodeError:
+    except ValueError:
         pass
-
-    value = _eval_with_node(source) if legacy_js else None
-    if value is not None:
-        return value
-
-    rep.error(
-        'SPEAKER_NOTES 无法解析：必须为合法 JSON（可信旧示例可显式 --legacy-js-notes）。'
-        '常见原因是字符串里的引号没转义、或少写了逗号/括号'
-    )
+    rep.error('SPEAKER_NOTES 必须是合法 JSON 数组；检查引号、逗号和括号')
     return []
 
 
@@ -380,7 +327,7 @@ def check_structure(html: str, rep: Report, profile: str = "standard") -> None:
         rep.error('缺 .page-indicator：不显示页码')
     # 注释里提到 slideOrder 是正常的（说明为什么不维护它），只拦真正的声明
     if re.search(r'(?:const|let|var)\s+slideOrder\s*=', html):
-        rep.error('残留 slideOrder 数组：该机制已移除，翻页顺序改由 DOM 顺序决定')
+        rep.error('不允许声明 slideOrder：翻页顺序由 DOM 顺序决定')
 
     # 逐格校验，不能只比全局计数：结构示例里 .toc-concl 可能出现在说明性位置，
     # 全局计数会把「某一格缺结论、别处多一个」算平，漏掉真实的缺格。
@@ -479,7 +426,6 @@ def main() -> None:
     ap.add_argument('--target-minutes', type=float, default=None, help='汇报时长（分钟），用于核对时间预算')
     ap.add_argument('--theme', default=None, help='期望的主题 ID')
     ap.add_argument('--profile', choices=('standard','adaptive'), default='standard')
-    ap.add_argument('--legacy-js-notes', action='store_true', help='only for trusted legacy samples; permits node evaluation of notes')
     args = ap.parse_args()
     if args.target_minutes is not None and (not math.isfinite(args.target_minutes) or args.target_minutes <= 0): ap.error('target-minutes must be positive finite')
 
@@ -492,7 +438,7 @@ def main() -> None:
     theme = check_theme(html, args.theme, rep)
     check_structure(html, rep, args.profile)
     slide_ids, lead_bars = check_slides(html, rep, args.profile)
-    notes = parse_notes(html, rep, args.legacy_js_notes)
+    notes = parse_notes(html, rep)
     check_notes(notes, slide_ids, rep)
     check_notes_not_repeating_page(notes, lead_bars, rep)
     check_placeholders(html, rep)

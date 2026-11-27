@@ -21,5 +21,9 @@
 ## 模板约束
 传统正式 deck 使用原有封面胶囊、目录逐章结论、内容三段式和收尾；若源没有目录、只有一两页、没有封面/收尾，使用 adaptive，不造页。封面/目录/收尾内容太复杂或超出模板时可改三段式，保留原语义角色与 ID。标题、Takeaway 和展开证据互补，不复述三遍。复杂图表/架构由 Agent 根据实际内容人工生成，基础脚本只支持安全的简单 Markdown 到模板映射。
 
-## V2.1 视觉优先与投屏密度
+## 视觉优先与投屏密度
 优先能真实编码关系的图表、流程、架构、矩阵；卡片不等于图示，纯文字仅在更直接时使用。准确数据、标签及关键限制保留在画面，口述细节由 Delivery/Fallback 补足。短表紧随判断，用大而清楚的行间距及列宽而不是在剩余空间垂直居中；只在内容确实充分时放大图示。基础渲染器的显式 `flow:` 可将 2–4 个 `###` 分组渲染为带方向的步骤链；只有源已表达顺序才使用，任意并列分组使用普通网格。更复杂的条件分支/真实数据图需要 Agent 按实际内容完成。见 [presentation-quality](presentation-quality.md)。
+
+
+## 显式关系与听众任务
+先识别 Visual Intent 的 `prefix:`（旧自由文本保持兼容）；例如 `risk: 风险表；包含 comparison` 应选择 risk，不能被描述中的 comparison 抢路由。`decision`、`change` → comparison，`expectation` → timeline，`attribution` → table，`mechanism` → architecture，`learning`/`action` → content；建议布局不等于已生成复杂图。依据 [同频展示手册](audience-synchrony.md) 控制跨页编码、讲述注意点、真实边界和核心路线。

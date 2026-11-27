@@ -1,9 +1,8 @@
 {
-  "contract_version": "1.1",
   "content_file": "presentation.md",
   "target_renderer": "generic",
   "readiness": "ready",
-  "revision": 2,
+  "revision": 1,
   "content_sha256": "82e8b2d01752063e1ed1ff3c1540288d18ef4cb4808fedcf927d12d8c054850f",
   "intent": {
     "scene": "合成示例：售前知识助手试点设计对齐",

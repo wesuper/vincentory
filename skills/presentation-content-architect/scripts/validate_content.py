@@ -3,8 +3,10 @@
 import argparse
 import json
 import re
+import tempfile
+import os
 from pathlib import Path
-from content_contract import validate, digest, load_json
+from content_contract import validate, digest, load_json, EXPERIENCE_PROFILE, experience_digest
 
 
 def main():
@@ -12,7 +14,7 @@ def main():
     try:
         if a.seal:
             h=load_json(a.handoff)
-            if h.get('contract_version')!='1.1' or not a.state: raise ValueError('--seal requires 1.1 and working-state.json')
+            if not a.state: raise ValueError('--seal requires working-state.json')
             state=load_json(a.state)
             if type(state.get('revision')) is not int or state['revision']<1: raise ValueError('state revision must be positive integer')
             current=digest(a.presentation); sealed=h.get('content_sha256'); previous=h.get('revision')
@@ -27,9 +29,28 @@ def main():
                 raise ValueError('changed content requires incremented revision before sealing')
             if type(previous) is int and state['revision']<previous:
                 raise ValueError('revision cannot decrease')
+            old_experience=h.get('experience_sha256')
             h.update(revision=state['revision'],content_sha256=current)
-            Path(a.handoff).write_text(json.dumps(h,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-        result=validate(a.presentation,a.handoff,a.state)
+            if 'experience' in state or 'experience_profile' in h or 'experience_sha256' in h:
+                if 'experience' not in state: raise ValueError('cannot seal declared audience journey without experience')
+                h['experience_profile']=EXPERIENCE_PROFILE
+                new_experience=experience_digest(h,state)
+                if old_experience is not None and (not isinstance(old_experience,str) or not re.fullmatch(r'[0-9a-f]{64}',old_experience)):
+                    raise ValueError('invalid previous experience_sha256')
+                if old_experience!=new_experience and type(previous) is int and sealed and state['revision']<=previous:
+                    raise ValueError('changed/added outcome plan requires incremented revision before sealing')
+                h['experience_sha256']=new_experience
+            dest=Path(a.handoff)
+            fd,temp=tempfile.mkstemp(prefix='.handoff-',suffix='.json',dir=dest.parent)
+            try:
+                with os.fdopen(fd,'w',encoding='utf-8') as f:
+                    f.write(json.dumps(h,ensure_ascii=False,indent=2)+'\n')
+                result=validate(a.presentation,temp,a.state)
+                if result['ok']: os.replace(temp,dest)
+            finally:
+                if Path(temp).exists(): Path(temp).unlink()
+        else:
+            result=validate(a.presentation,a.handoff,a.state)
     except (OSError,ValueError,TypeError,KeyError,AttributeError) as e: result={'ok':False,'errors':[str(e)]}
     print(json.dumps(result,ensure_ascii=False,indent=2)); return 0 if result['ok'] else 1
 

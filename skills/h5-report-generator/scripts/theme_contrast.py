@@ -41,9 +41,9 @@ def ratio(a, b):
 
 def main():
     root = sys.argv[1] if len(sys.argv) > 1 else '.'
-    files = sorted(glob.glob(os.path.join(root, 'templates/deck/themes/*.css')))
+    files = sorted(glob.glob(os.path.join(root, 'assets/deck/themes/*.css')))
     if not files:
-        sys.exit(f'找不到主题文件：{root}/templates/deck/themes/')
+        sys.exit(f'找不到主题文件：{root}/assets/deck/themes/')
 
     failures = []
     checked = 0

@@ -1,5 +1,16 @@
 # 响应式设计指南
 
+## 内容索引
+
+- 视口设置
+- 断点设置
+- 核心布局适配
+- 移动端优化
+- 图表适配
+- 测试建议
+- 完整示例
+
+
 本指南介绍如何为H5汇报材料添加移动设备支持，确保在不同屏幕尺寸下都能正常显示。
 
 ## 视口设置
@@ -222,7 +233,7 @@ window.addEventListener('resize', function() {
 
 ## 完整示例
 
-响应式实现见 `templates/h5-report-template.html`（由 `deck/style.css` 内联生成），三组断点定义在 `templates/deck/style.css` 末尾的 `@media` 块中。
+响应式实现见 `assets/h5-report-template.html`（由 `deck/style.css` 内联生成），三组断点定义在 `assets/deck/style.css` 末尾的 `@media` 块中。
 
 ```html
 <!DOCTYPE html>
