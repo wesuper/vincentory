@@ -7,20 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.2] - 2026-11-26
 
+### Added
+
+- `presentation-content-architect` 首次发布：内容契约、示例、handoff schema、校验器与 READY 门禁测试；登记进 `.claude-plugin/plugin.json` 与 README 发布列表。
+- 添加 `.claude-plugin/icon.png` 插件图标，修复 `ICON_MISSING` 警告。
+
 ### Changed
 
 - `h5-report-generator` 将常规汇报时长控制调整为两档：30 分钟会议默认 deck 讲 25 分钟（8–10 页），60 分钟会议默认讲 50 分钟（12–16 页）；剩余会议时间留给 Q&A。
 - Step 0 明确用户输入的汇报时长、页数与内容要求优先于会议时长默认值；未在 deck 中明确的时间按用户要求使用，不套用旧表。`duration_minutes` 和 `validate_deck.py --target-minutes` 始终使用 deck 汇报时长，不是会议总长。
 - 结构化内容模式同步采用新的时长优先级，并明确页数按“少而完整”控制，避免生成过多页面。
-
-## [Unreleased]
-
-### Changed
-
-- `presentation-content-architect` 按 skill 最佳实践重构：description 改为触发条件，正文改为六步任务清单、明确的提问/跳过规则、机器可判定的 READY 门禁与回归测试、压力下常见误判对照表与单层引用索引；删除重复的 `references/content-contract.md`。
-- 将该 Skill 加入 `.claude-plugin/plugin.json` 的 `skills` 数组和 README 发布列表，并更新其 README 以匹配新流程。
-- `validate_content.py` 增加状态枚举、三处进度一致性、每页 `Minutes:` 完整性、Evidence 非空、READY 门禁字段检查与回归测试；`unresolved` 在 handoff schema 与共享契约中改为必填。
-- 添加 `.claude-plugin/icon.png` 插件图标，修复 `ICON_MISSING` 警告。
 - `npm run validate` 改用 `scripts/validate-plugin.sh`：保留根目录 `CLAUDE.md`，只忽略已知的 root-context 警告；其他警告和错误仍会使校验失败。
 
 ## [0.4.1] - 2026-11-26
