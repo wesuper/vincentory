@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import shutil
 import subprocess
@@ -126,8 +127,15 @@ def first_element_classes(fragment: str) -> set[str]:
 
 
 def _extract_notes_source(html: str) -> str | None:
-    m = re.search(r'window\.SPEAKER_NOTES\s*=\s*(\[[\s\S]*?\]);', html)
-    return m.group(1) if m else None
+    m = re.search(r'window\.SPEAKER_NOTES\s*=\s*', html)
+    if not m: return None
+    raw = html[m.end():]
+    try:
+        _, end = json.JSONDecoder().raw_decode(raw)
+        return raw[:end]
+    except ValueError:
+        old = re.match(r'(\[[\s\S]*?\]);', raw)
+        return old.group(1) if old else None
 
 
 def _eval_with_node(source: str) -> list | None:
@@ -157,7 +165,7 @@ def _eval_with_node(source: str) -> list | None:
     return value if isinstance(value, list) else None
 
 
-def parse_notes(html: str, rep: Report) -> list[dict]:
+def parse_notes(html: str, rep: Report, legacy_js: bool = False) -> list[dict]:
     """解析 window.SPEAKER_NOTES。
 
     备注是写在 HTML 里的 JS，所以对象字面量（单引号、尾逗号、注释）同样合法：
@@ -176,12 +184,12 @@ def parse_notes(html: str, rep: Report) -> list[dict]:
     except json.JSONDecodeError:
         pass
 
-    value = _eval_with_node(source)
+    value = _eval_with_node(source) if legacy_js else None
     if value is not None:
         return value
 
     rep.error(
-        'SPEAKER_NOTES 无法解析：既不是合法 JSON，node 求值也失败。'
+        'SPEAKER_NOTES 无法解析：必须为合法 JSON（可信旧示例可显式 --legacy-js-notes）。'
         '常见原因是字符串里的引号没转义、或少写了逗号/括号'
     )
     return []
@@ -189,6 +197,7 @@ def parse_notes(html: str, rep: Report) -> list[dict]:
 
 def check_notes(notes: list[dict], slide_ids: list[str], rep: Report) -> None:
     if not notes:
+        if slide_ids: rep.error("备注数组为空")
         return
 
     if len(notes) != len(slide_ids):
@@ -200,11 +209,13 @@ def check_notes(notes: list[dict], slide_ids: list[str], rep: Report) -> None:
         return
 
     ids = [n.get('id') for n in notes]
-    dupes = sorted({i for i in ids if i and ids.count(i) > 1})
+    dupes = sorted({i for i in ids if isinstance(i,str) and i and ids.count(i) > 1})
     if dupes:
         rep.error(f'备注 id 重复：{", ".join(dupes)}')
 
-    if sorted(filter(None, ids)) != sorted(slide_ids):
+    if ids != slide_ids:
+        rep.error("备注 ID/顺序与页面不一致")
+    if all(isinstance(i,str) for i in ids) and sorted(filter(None, ids)) != sorted(slide_ids):
         only_notes = sorted(set(filter(None, ids)) - set(slide_ids))
         only_slides = sorted(set(slide_ids) - set(filter(None, ids)))
         detail = []
@@ -227,16 +238,16 @@ def check_notes(notes: list[dict], slide_ids: list[str], rep: Report) -> None:
 
         talk = n.get('talk')
         if isinstance(talk, list):
-            if len(talk) > 4:
-                rep.warn(f'备注 {nid}: talk 有 {len(talk)} 条，超过 4 条说明这页该拆')
+            if not 2 <= len(talk) <= 4:
+                rep.error(f'备注 {nid}: talk 有 {len(talk)} 条，超过 4 条说明这页该拆')
             for t in talk:
                 if not isinstance(t, str) or not t.strip():
                     rep.error(f'备注 {nid}: talk 含空条目')
                 elif len(t) > 40:
-                    rep.warn(f'备注 {nid}: talk 有一条 {len(t)} 字，超过 40 字建议压缩')
+                    rep.error(f'备注 {nid}: talk 有一条 {len(t)} 字，超过 40 字建议压缩')
 
         minutes = n.get('minutes')
-        if minutes is not None and not (isinstance(minutes, (int, float)) and minutes > 0):
+        if minutes is not None and not (isinstance(minutes, (int, float)) and not isinstance(minutes,bool) and math.isfinite(minutes) and minutes > 0):
             rep.error(f'备注 {nid}: minutes 必须为正数或省略')
 
         for f in ('cue', 'interaction', 'delivery', 'advance', 'fallback', 'pronunciation'):
@@ -270,13 +281,13 @@ def check_notes_not_repeating_page(notes: list[dict], lead_bars: dict[str, str],
                 rep.warn(f'备注 {n.get("id")}: talk 复述了本页 lead-bar「{lead_plain[:24]}…」')
 
 
-def check_slides(html: str, rep: Report) -> tuple[list[str], dict[str, str]]:
+def check_slides(html: str, rep: Report, profile: str = "standard") -> tuple[list[str], dict[str, str]]:
     sections = split_sections(html)
     if not sections:
         rep.error('找不到 <section class="slide">：没有任何页面')
         return [], {}
 
-    if len(sections) < 5:
+    if profile == "standard" and len(sections) < 5:
         rep.error(f'只有 {len(sections)} 页，SKILL.md 要求最少 5 页')
 
     slide_ids: list[str] = []
@@ -350,6 +361,8 @@ def check_slides(html: str, rep: Report) -> tuple[list[str], dict[str, str]]:
         if li_count > 7:
             rep.warn(f'{label}: 页面级要点 {li_count} 个，超过 7 个建议拆页')
 
+    if len(slide_ids) != len(set(slide_ids)):
+        rep.error("data-slide-id 重复")
     # 内容页编号应从 01 起连续
     expected = [f'{i:02d}' for i in range(1, len(content_numbers) + 1)]
     if content_numbers and content_numbers != expected:
@@ -358,7 +371,7 @@ def check_slides(html: str, rep: Report) -> tuple[list[str], dict[str, str]]:
     return slide_ids, lead_bars
 
 
-def check_structure(html: str, rep: Report) -> None:
+def check_structure(html: str, rep: Report, profile: str = "standard") -> None:
     if 'class="progress-bar"' not in html:
         rep.error('缺 <div class="progress-bar">：顶部进度条失效')
     if 'id="prevBtn"' not in html or 'id="nextBtn"' not in html:
@@ -372,7 +385,7 @@ def check_structure(html: str, rep: Report) -> None:
     # 逐格校验，不能只比全局计数：结构示例里 .toc-concl 可能出现在说明性位置，
     # 全局计数会把「某一格缺结论、别处多一个」算平，漏掉真实的缺格。
     toc_cells = elements_with_class(html, 'toc-cell')
-    if not toc_cells:
+    if not toc_cells and profile == "standard":
         rep.warn('没有 .toc-cell：目录页缺结论卡')
     for i, cell in enumerate(toc_cells, 1):
         if 'toc-concl' not in cell:
@@ -388,9 +401,9 @@ def check_structure(html: str, rep: Report) -> None:
     body = html[html.index('<body>') + len('<body>'):] if '<body>' in html else html
     chips = sum(1 for m in re.finditer(r'<div\b[^>]*>', body)
                 if 'cover-chip' in class_list(m.group(0)))
-    if chips == 0:
+    if chips == 0 and (profile == "standard" or 'class="cover-page"' in body):
         rep.error('封面缺 .cover-chip 结论胶囊（结论先行要求 2–3 个）')
-    elif chips < 2:
+    elif chips and not 2 <= chips <= 3:
         rep.error(f'封面只有 {chips} 个 .cover-chip，要求 2–3 个')
 
 
@@ -447,13 +460,13 @@ def check_duplicate_ids(html: str, rep: Report) -> None:
 
 def check_budget(notes: list[dict], target: int | None, rep: Report) -> float | None:
     mins = [n.get('minutes') for n in notes if isinstance(n, dict)]
-    if not mins or any(not isinstance(m, (int, float)) or isinstance(m, bool) or m <= 0 for m in mins):
+    if not mins or any(not isinstance(m, (int, float)) or isinstance(m, bool) or not math.isfinite(m) or m <= 0 for m in mins):
         if target:
-            rep.warn('部分或全部备注缺少 minutes：无法核对时间预算')
+            rep.error('部分或全部备注缺少有效 minutes：无法核对时间预算')
         return None
     total = float(sum(float(m) for m in mins if isinstance(m, (int, float))))
     if target:
-        if total > target * 0.9:
+        if total > target * 0.9 + 1e-9:
             rep.error(f'计划总时长 {total:g} 分钟超过 {target} 分钟的 90%（{target * 0.9:g}）：没给互动和意外留缓冲')
         elif total < target * 0.55:
             rep.warn(f'计划总时长 {total:g} 分钟不足 {target} 分钟的 55%：可能讲不满')
@@ -463,9 +476,12 @@ def check_budget(notes: list[dict], target: int | None, rep: Report) -> float | 
 def main() -> None:
     ap = argparse.ArgumentParser(description='校验 H5 汇报的结构契约与演讲备注契约')
     ap.add_argument('file', help='生成的 index.html')
-    ap.add_argument('--target-minutes', type=int, default=None, help='汇报时长（分钟），用于核对时间预算')
+    ap.add_argument('--target-minutes', type=float, default=None, help='汇报时长（分钟），用于核对时间预算')
     ap.add_argument('--theme', default=None, help='期望的主题 ID')
+    ap.add_argument('--profile', choices=('standard','adaptive'), default='standard')
+    ap.add_argument('--legacy-js-notes', action='store_true', help='only for trusted legacy samples; permits node evaluation of notes')
     args = ap.parse_args()
+    if args.target_minutes is not None and (not math.isfinite(args.target_minutes) or args.target_minutes <= 0): ap.error('target-minutes must be positive finite')
 
     try:
         html = open(args.file, encoding='utf-8').read()
@@ -474,9 +490,9 @@ def main() -> None:
 
     rep = Report()
     theme = check_theme(html, args.theme, rep)
-    check_structure(html, rep)
-    slide_ids, lead_bars = check_slides(html, rep)
-    notes = parse_notes(html, rep)
+    check_structure(html, rep, args.profile)
+    slide_ids, lead_bars = check_slides(html, rep, args.profile)
+    notes = parse_notes(html, rep, args.legacy_js_notes)
     check_notes(notes, slide_ids, rep)
     check_notes_not_repeating_page(notes, lead_bars, rep)
     check_placeholders(html, rep)

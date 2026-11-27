@@ -142,7 +142,10 @@ def check(html, root):
     if missing:
         problems.append('皮肤段缺少令牌（观众页会掉回浏览器默认值）：' + ', '.join(sorted(missing)))
 
-    notes = re.findall(r"id:\s*'([^']+)'", html)
+    # 备注写合法 JSON（双引号），旧样例可能是 JS 字面量（单引号）；两种都认，
+    # 但只取 SPEAKER_NOTES 数组内部的 id，避免误抓页面里其它地方的同名键。
+    notes_block = re.search(r'window\.SPEAKER_NOTES\s*=\s*(\[[\s\S]*?\n\s*\]);', html)
+    notes = re.findall(r'''\bid["']?\s*:\s*['"]([^'"]+)['"]''', notes_block.group(1)) if notes_block else []
     slides = re.findall(r'data-slide-id="([^"]+)"', html)
     if sorted(notes) != sorted(slides):
         problems.append(f'备注 id 与 data-slide-id 不匹配：notes={sorted(notes)} slides={sorted(slides)}')
