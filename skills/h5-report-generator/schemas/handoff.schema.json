@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "content_file",
+    "target_renderer",
+    "readiness",
+    "unresolved",
+    "slides"
+  ],
+  "properties": {
+    "contract_version": {
+      "enum": [
+        "1.0",
+        "1.1"
+      ]
+    },
+    "content_file": {
+      "type": "string"
+    },
+    "target_renderer": {
+      "type": "string"
+    },
+    "readiness": {
+      "enum": [
+        "ready",
+        "needs_review",
+        "blocked"
+      ]
+    },
+    "adapter": {
+      "type": "object"
+    },
+    "unresolved": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "slides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "slide_id",
+          "role",
+          "title",
+          "visual_intent",
+          "speaker_notes_present"
+        ],
+        "properties": {
+          "slide_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "role": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "chapter": {
+            "type": "string"
+          },
+          "visual_intent": {
+            "type": "string"
+          },
+          "speaker_notes_present": {
+            "const": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "intent": {
+      "type": "object",
+      "required": [
+        "scene",
+        "primary_audience",
+        "current_belief",
+        "desired_belief",
+        "desired_action",
+        "success_signal"
+      ],
+      "properties": {
+        "scene": {
+          "type": "string",
+          "minLength": 1
+        },
+        "primary_audience": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_belief": {
+          "type": "string",
+          "minLength": 1
+        },
+        "desired_belief": {
+          "type": "string",
+          "minLength": 1
+        },
+        "desired_action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "success_signal": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "contract_version": {
+            "const": "1.1"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "revision",
+          "content_sha256",
+          "intent"
+        ],
+        "properties": {
+          "slides": {
+            "items": {
+              "required": [
+                "chapter"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -57,7 +57,7 @@ class ValidatorReadyGateTests(unittest.TestCase):
         (d / "presentation.md").write_text(md, encoding="utf-8")
         (d / "handoff.json").write_text(json.dumps(handoff, ensure_ascii=False), encoding="utf-8")
         (d / "working-state.json").write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
-        args = [sys.executable, str(SCRIPT), str(d / "presentation.md"),
+        args = [sys.executable, "-S", str(SCRIPT), str(d / "presentation.md"),
                 str(d / "handoff.json")]
         if with_state:
             args.append(str(d / "working-state.json"))

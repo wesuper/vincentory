@@ -1,0 +1,31 @@
+{
+  "main_claim": {
+    "text": "先固定可比售前任务并通过质量、出处、权限验证，再评价成本与扩围",
+    "status": "recommendation"
+  },
+  "claims": [
+    {
+      "id": "c1",
+      "text": "先固定售前答复任务，再比较人工与助手",
+      "status": "recommendation",
+      "slides": [
+        "problem"
+      ],
+      "evidence_ids": [
+        "E-001"
+      ]
+    },
+    {
+      "id": "c2",
+      "text": "效率必须与答复质量、出处和权限一起验收",
+      "status": "recommendation",
+      "slides": [
+        "validation",
+        "next"
+      ],
+      "evidence_ids": [
+        "E-002"
+      ]
+    }
+  ]
+}

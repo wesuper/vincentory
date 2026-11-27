@@ -11,7 +11,10 @@
   ],
   "properties": {
     "contract_version": {
-      "const": "1.0"
+      "enum": [
+        "1.0",
+        "1.1"
+      ]
     },
     "content_file": {
       "type": "string"
@@ -48,7 +51,8 @@
         ],
         "properties": {
           "slide_id": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
           },
           "role": {
             "type": "string"
@@ -63,10 +67,83 @@
             "type": "string"
           },
           "speaker_notes_present": {
-            "type": "boolean"
+            "const": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "intent": {
+      "type": "object",
+      "required": [
+        "scene",
+        "primary_audience",
+        "current_belief",
+        "desired_belief",
+        "desired_action",
+        "success_signal"
+      ],
+      "properties": {
+        "scene": {
+          "type": "string",
+          "minLength": 1
+        },
+        "primary_audience": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_belief": {
+          "type": "string",
+          "minLength": 1
+        },
+        "desired_belief": {
+          "type": "string",
+          "minLength": 1
+        },
+        "desired_action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "success_signal": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "contract_version": {
+            "const": "1.1"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "revision",
+          "content_sha256",
+          "intent"
+        ],
+        "properties": {
+          "slides": {
+            "items": {
+              "required": [
+                "chapter"
+              ]
+            }
           }
         }
       }
     }
-  }
+  ]
 }

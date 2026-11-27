@@ -1,114 +1,49 @@
 ---
 name: presentation-content-architect
-description: Use when a user brings a vague idea, outline, meeting notes, chat transcript, or reference material and needs a defensible presentation script, argument structure, speaker notes, or renderer-neutral content handoff; use before HTML/PPT rendering, when a claim lacks evidence, or when a revision must preserve prior decisions and slide IDs. Not for layout or CSS.
+description: 将模糊想法、提纲、访谈纪要和参考材料转化为面向领导、客户、同行或晋升评委的可论证演示内容、逐页讲稿、证据台账和可供渲染器消费的交接文件。适用于汇报、技术分享、售前、市场介绍、评审、晋升答辩、重构演示逻辑或与用户持续澄清；也可单独交付 Markdown。仅要求现成内容排版、HTML/CSS 或 H5 投屏时交给渲染 Skill。
 ---
 
 # Presentation Content Architect
 
-## Overview
+## 任务与边界
+把原始材料变成**听众能理解、质疑、复述并据此行动的内容真源**。内容与展示分离。只产出 Markdown/JSON，不自行生成 HTML/CSS；不绑定主题、模板类或渲染器。事实、用户陈述、推断、建议、假设分开；不得杜撰数字、案例、来源、个人贡献、产品承诺。角色会诊只是模拟，不证明听众真实认可。
 
-把原始输入变成**可被任何渲染器消费的内容真源**：完整演示稿、讲者备注、证据台账和交接索引。核心原则：内容结构与展示模板分离；先明确问题和主张，再扩写正文；每个结论都能追溯到事实、推断或显式假设。
+## 入口分流
+- 快速提纲/单页：直接给结论骨架及关键假设，不强制落盘六件套；需要正式稿或交接时走完整流程。
+- 探索共创（目标或证据不明）：先给可编辑的初步叙事，一轮问一个最改变判断的问题；答后更新。默认最多六个有效问题再给当前可用稿；用户继续深挖则继续，不凑轮次。
+- 直接出稿（用户明确要求/材料充分）：用已知事实，标记缺口，能做则做；只在关键目标、权限或证据矛盾会改变主线时提问。未知不得写成用户已确认。
+- 修订：先读取旧产物，定位影响页；保持原 slide_id、证据 ID、未改变的结论。新增/删页显式记录映射，更新 revision；不复问已确认项。
 
-**适用信号**：用户说“讲清楚 / 汇报 / 说服 / 做个汇报 / 帮我搭结构 / 逐页写稿 / 补演讲备注 / 换角度改稿”，或手上有提纲、对话记录、材料却不知道怎么组织。用户只要一份简单提纲且没有论证或证据要求时，直接写即可，不必启动完整状态机。
-
-## 硬边界
-
-- 本 Skill 生产 **Markdown 内容**，不生产 HTML、CSS、主题色、模板类名或图表实现代码。用户同时要求投屏页面时，把最终 `presentation.md` 和 `handoff.json` 的本地路径交给渲染 Skill，不自行拼页面。报告交接前先确认这两个文件存在；不要承诺已生成任何未创建的文件。
-- 不得把 `hypothesis / unverified / disputed` 写成事实，不得编造来源、数字、客户案例或专家观点。无来源时保留限定条件；用户要求“别写待核实”时，改写为正向的稳健表述（如“不承诺效益数字，用基线验证”），并在 `Evidence` 和 `sources.md` 中保留真实状态。
-- `Visual Intent` 只是卡片、对比、时间轴等语义建议，不绑定任何主题的组件名或样式。
-
-## 工作流（复制为任务清单逐项推进）
-
-```
-Content Progress:
-- [ ] 1. 归档输入：区分用户明确事实、用户观点、待验证假设、未知信息
-- [ ] 2. 问题定义：展示第一版骨架；只问 1 个最能改变结论的问题
-- [ ] 3. 建 claim-map.json 与 outline.md：每页一个独立主张
-- [ ] 4. 扩写 presentation.md 与 sources.md：逐页填写契约字段
-- [ ] 5. 生成 handoff.json 与 working-state.json：顺序、状态、未决问题一致
-- [ ] 6. 运行 scripts/validate_content.py；按错误回改，直到通过
-```
-
-**Step 1 — 归档输入**
-读取用户输入及已有工作目录；把每句话归入：明确事实 / 用户观点 / 待验证假设 / 未知信息。冲突时以用户当前指令优先，旧材料与本次指令的差异记入 `working-state.json`。不要从随口猜测中制造已确认决策。
-
-**Step 2 — 问题定义与唯一提问**
-先给用户可编辑的骨架，再问**一个**最能改变结论的问题；根据回答更新判断，必要时再问下一个，最多 6 个有意义的问题，信息足够立即停止。以下情形可跳过提问，直接用显式假设继续：用户明确说“直接生成 / 先出稿 / 时间紧”；输入已包含受众、目标、时长与决策事项；用户要求继续上一轮且已有工作文件。跳过时把假设写入 `working-state.json.assumptions`，并在 `outline.md` 标出尚待确认项。不得用“问题看起来很小”作为跳过理由。
-
-**Step 3 — 骨架**
-先写 `claim-map.json`（主张、分论点、证据 ID、状态、对应页），再写 `outline.md`（章节、每页唯一结论、需要补强的证据）。每轮只更新受影响的论点或页面，保留已确认结论。方法按需选择，不为凑数全用：读取 [references/method-router.md](references/method-router.md) 按“真实缺口 → 方法 → 停止条件”选择，在每轮“更新摘要”中写出确认事实、改变的判断、待验证问题、下一步建议。专家会诊只是角色模拟，纵横研究只有在有来源时才可做事实结论，跨领域类比不等于证据。
-
-**Step 4 — 扩写**
-按 [references/presentation-contract.md](references/presentation-contract.md) 写 `presentation.md`：`#` 结论标题、`> Takeaway:`、`## Visible`、`## Evidence`、`## Visual Intent`、`## Speaker Notes`（Purpose / 2–4 条 Talk，每条 ≤40 字 / Transition / Minutes）。封面、目录、收尾同样有 slide_id 和备注。正文必须独立可理解；备注补充背景、故事、异议和转场，不照读正文。重要数字和引文写入 `sources.md`，逐条标来源与事实状态。
-
-**Step 5 — 交接与进度**
-`handoff.json` 的 `slides[]` 顺序必须与 `presentation.md` 完全一致，含 slide_id、role、title、visual_intent、speaker_notes_present；`readiness` 取 `ready / needs_review / blocked`。`working-state.json` 记录 stage、revision、confirmed、assumptions、open_questions、decision_log 和 slide_maturity。提供 h5-report-generator 时读取 [references/h5-adapter.md](references/h5-adapter.md) 做语义适配；主题只写在 adapter 区，不改变正文。未提供模板时照常独立交付。
-
-**Step 6 — 校验与循环**
-在六个交付文件所在目录运行；`<skill-root>` 替换为包含本 `SKILL.md` 的目录绝对路径，三个产物路径相对当前输出目录（产物在其他目录时改为对应路径）：
+## 完整工作流（按阶段落盘）
+1. **定义结果**：读取 [audience-playbook](references/audience-playbook.md) 对应场景。先写听众是谁/权限、现在相信什么、听后应理解什么、期望行动或应用、如何观察达成、主讲时长（区分会议/Q&A）。用户未说的记 assumptions。用这组目标反推内容，不用固定汇报模板。
+2. **澄清与诊断**：区分事实/用户报告/观点/待证假设，冲突保留来源。给用户初版「听众问题 → 主张 → 证据缺口 → 预计行动」，然后问最改变结论的一问。读取 [method-router](references/method-router.md)，只选与缺口相关的方法：苏格拉底定义问题、第一性原理检验因果、金字塔组织论点、SCQA 建立背景；行业研究/核查/双层解释/专家会诊/反向拆解/跨域类比按需。研究优先原始来源，无法查证则标记。每轮记录确认、变化、剩余关键问题；足够即停。
+3. **构建主线**：先写 claim-map.json，再写 outline.md。每页一个独立的信息任务，标题是准确判断/待验证问题；证据强度匹配结论。根据听众和时长决定是否需要封面/目录/附录，不设固定页数。列最强异议、反例、替代方案和停止条件；混合受众分主线/备注/附录。先解决主张是否成立，再扩写。逐页执行 [内容信息增量门禁](references/slide-quality.md)：回答一个具体听众问题，给出独立、可核查的信息增量，确定证据/机制/案例/比较/执行方案和视觉关系；不能以空泛观点撑页。缺材料先定向澄清，或明确降为拟议验证方案/草案，不编造数据。
+4. **完整稿**：按 [presentation-contract](references/presentation-contract.md) 写 presentation.md、sources.md；正文以听众能看懂的结论和可核对的证据为主，关键限定和公开来源提示必须在 Visible；Evidence 放内部追溯信息。Notes 的 Purpose 是本页改变的判断，Talk 2–4 条每条≤40字，Transition 与下一页有逻辑；Minutes 按实际讲述时间，留缓冲；Cue/Fallback/Interaction 可加入异议与答疑跳转。优先图表与结构化图示（有真实关系才画），Visible 仅保留短标签、关键数字、比较维度、结论与必要限定；解释、推理、口述案例、计算口径与反方回答放入 Talk/Delivery/Fallback，不能把关键证据或风险只藏在备注。Delivery 可写完整单行口述展开；Talk 仍为现场提示，不复读画面。需要更长讲稿可另写。
+5. **反方预演**：读取 [quality-gates](references/quality-gates.md)。模拟主要听众、怀疑者、执行者各自提问，修订不能成立的主张；每项门禁记录依据，不能用总分抵消致命问题。另逐页填写 working-state.quality_profile= presentation-v2.1 与 slide_quality（见 slide-quality）；对空洞、复述、证据不支持、错误图示和画面/口播分工失败的页标 revise，修订或合并后才可 READY。用户要答辩/PoC/技术评审时尤其核对真实标准、归因、验证与边界。保留拟验证项，不冒充实际认可。
+6. **交接**：生成 handoff.json、working-state.json；按契约 1.1 生成新稿，旧 1.0 可读。默认 `presentations/<slug>/`，用户指定优先。写齐后用下列命令封存 revision 对应的 SHA-256 并校验；修改后重新封存。先读错误、局部修订、重跑；通过仅表示机器门禁通过，仍要做 Step 5。
 
 ```bash
+python3 "<skill-root>/scripts/validate_content.py" presentation.md handoff.json working-state.json --seal
 python3 "<skill-root>/scripts/validate_content.py" presentation.md handoff.json working-state.json
 ```
 
-脚本检查 slide_id 唯一且有序、契约字段齐全、Talk 2–4 条且每条 ≤40 字、每页恰好一个 `Minutes:` 且合计不超过用户上限的 90%，以及机器可判定的 READY 条件：`status / readiness / stage` 一致、`open_questions` 与 `unresolved` 为空、字段枚举合法。脚本的 `ok: true` **只代表这些机械检查通过**，不证明证据质量、下游渲染或其他人工门禁。脚本失败时按错误定位到具体页面或状态文件修订后重跑；脚本通过也需人工核对 [references/quality-gates.md](references/quality-gates.md)。
+## 状态与停问标准
+- 状态机 `INTAKE → QUESTION_DEFINED → SKELETON → ENRICHED → REVIEW → READY`，可回退。
+- DRAFT/REVIEW 对应 needs_review 或 blocked；READY 对应 ready。关键矛盾、披露授权未定、关键证据不足且结论不能降级时 blocked；尚需确认但能安全预览时 needs_review。
+- `open_questions` 与 `handoff.unresolved` 仅记影响内容交付的阻塞项且同步。已通过有条件结论消化的非阻塞假设写 `limitations`（不能藏在备注或伪称已确认）。
+- READY：意图已明确或受控假设已说明；机器通过；所有质量门禁 pass/合理不适用，新增逐页 slide_quality 全部 pass；关键事实/结论/边界可追溯；阻塞为空。内容 READY 不依赖尚未进行的 HTML 验收，也不等于获准公开发布。
+- 无法继续澄清时交付可用草案和精确缺口，不无限追问，也不为了通过校验清空未决问题。
 
-## 状态机与 READY 门禁
-
-`INTAKE → QUESTION_DEFINED → SKELETON → ENRICHED → REVIEW → READY`，用户可要求回到任意阶段。每轮把进度写入 `working-state.json`，不是只在聊天里说明。
-
-只有同时满足以下条件才把 `presentation.md.status` 和 `handoff.json.readiness` 标为 READY / ready：
-
-1. 受众、目标、期望行动明确，或在 assumption 中显式记录；
-2. 校验脚本通过（脚本只覆盖其中可机械检查的部分）；
-3. 所有关键主张有证据或显式的 `hypothesis / unverified` 标记；
-4. `open_questions` 和 `unresolved` 都为空；有未决问题一律先标 `needs_review`；
-5. 下游只需排版，无需再改论证或事实。
-
-脚本的 `ok: true` 只覆盖第 2 条中可机械检查的部分，并检查第 4 条和状态一致性；第 1、3、5 条必须人工核对，不得用脚本结果替代。
-
-任一条件不满足时为 `needs_review`；材料相互矛盾或关键事实无法得到时为 `blocked`。非 ready 状态只能预览，不得宣称可自动发布。
-
-三个进度字段采用不同词表，不要混写：`presentation.md.status` 用 `DRAFT / REVIEW / READY`，`handoff.json.readiness` 用 `needs_review / blocked / ready`，`working-state.json.stage` 用状态机中的 `INTAKE / QUESTION_DEFINED / SKELETON / ENRICHED / REVIEW / READY`；三者表达同一进度。
-
-## 常见错误
-
-| 错误 | 修正 |
-|---|---|
-| 时间紧就一次问完问卷，或直接跳过提问且不记录假设 | 展示骨架后只问一个改变结论的问题；跳过时把假设落盘 |
-| 用 `[待填]` 占位却从未生成可交接的工作文件 | 六个文件写齐；占位内容在 `working-state.json` 中对应到未决问题 |
-| 有未决问题仍标 `READY / ready`，或把未决项说成“不阻塞” | 清空未决问题或把状态降为 `needs_review` |
-| 把未核实的行业数字写成事实，或只在备注中提示 | 从 Visible 移除；写入 `sources.md`，Visible 用稳健表述 |
-| 改稿时重编号、丢掉旧证据或未决问题 | 保留 slide_id 和证据状态；只更新受影响页面并追加 decision_log |
-| 直接输出 HTML/CSS 或声称已生成并未创建的投屏文件 | 只交接本地路径给渲染 Skill；核对文件存在后再报告 |
-| 用一堆方法名字堆砌流程 | 按 `method-router.md` 的真实缺口选 1–3 种，在更新摘要中给出停止条件 |
-
-## 压力下的自我检查
-
-时间紧、用户要求“看起来专业”、已有旧稿可照抄时，最容易发生以下误判。看到这些说法就按右栏执行；不要让“精神病态式走捷径”凌驾于内容真源：
-
-| 常见说法 | 实际后果 / 处理 |
-|---|---|
-| “时间紧，跳过提问就行” | 跳过提问本身允许，但必须把受众、时长、目标和决策假设写入 `working-state.json.assumptions`，并在 `outline.md` 标出未决项。 |
-| “把假设写在正文里就够了” | 正文里的假设无法追踪。必须落盘到 `working-state.json`，并映射到 `open_questions`。 |
-| “现场要确认的假设只是执行提示，不阻塞 ready” | READY 有五条门禁；只要 `open_questions` / `unresolved` 非空，就只能是 `needs_review`。 |
-| “用户说别写待核实，那就把无来源数字写成正面结论” | 改为稳健表述（如“用基线验证收益”），真实状态写入 `Evidence` 和 `sources.md`，不是改写事实。 |
-| “用户说直接能投屏，顺手给个 HTML” | 本 Skill 的交付物是内容真源；只交接路径给渲染 Skill，并确认文件真实存在后再报告。 |
-| “沿用旧六页结构就行” | 结构可以保留，但结论、证据状态、slide_id 和未决问题必须逐项复核；修改写进 `decision_log`。 |
+## 独立与联用
+单独使用：交付六文件，用户可直接讲或交给任意渲染器。H5 联用：读取 [h5-adapter](references/h5-adapter.md)，把实际存在的 `presentation.md`、`handoff.json`、`working-state.json` 及同目录文件路径交给 h5-report-generator（仅在可用时调用）；若不可用仍交付独立稿。下游回传 `slide_id/issue/available_space/proposed_revision` 后，先检查影响主张/证据/时长；需要时重走门禁并更新 revision，未授权不可改事实。
 
 ## 文件索引
-
-| 文件 | 何时读取 |
-|---|---|
-| [references/presentation-contract.md](references/presentation-contract.md) | 写或检查 `presentation.md` / `handoff.json` 时 |
-| [references/method-router.md](references/method-router.md) | 选择分析方法、设计提问路径时 |
-| [references/quality-gates.md](references/quality-gates.md) | Step 6 人工复核时 |
-| [references/h5-adapter.md](references/h5-adapter.md) | 用户提供 h5-report-generator 作为下游渲染器时 |
-| [examples/](examples/) | 首次使用或需要看六个文件长什么样时；以契约和脚本为准 |
-| [schemas/handoff.schema.json](schemas/handoff.schema.json) | 手工检查 handoff 字段时 |
-| [scripts/validate_content.py](scripts/validate_content.py) | 每次生成或改稿后运行，命令见 Step 6；只覆盖机械检查，不替代人工门禁 |
-| [scripts/test_validate_content.py](scripts/test_validate_content.py) | 修改校验器或 READY 门禁后运行：`python3 -m unittest scripts/test_validate_content.py`（从 Skill 根目录） |
-
-## 输出位置
-
-默认写到当前项目的 `presentations/<slug>/`：`outline.md`、`claim-map.json`、`working-state.json`、`presentation.md`、`sources.md`、`handoff.json`；用户指定路径优先。逐轮更新对应文件，不只把结果写在聊天里。
+- [presentation-contract](references/presentation-contract.md)：正式字段、状态、示例格式（生成/修订必读）。
+- [audience-playbook](references/audience-playbook.md)：按角色/听众/场景反推验收（定义意图时）。
+- [method-router](references/method-router.md)：遇到诊断/逻辑缺口时。
+- [quality-gates](references/quality-gates.md)：内容 READY 前。
+- [slide-quality](references/slide-quality.md)：主线、逐页稿与评审必读，信息增量/视觉优先/讲述分工。
+- [h5-adapter](references/h5-adapter.md)：仅联用时。
+- [examples](examples/)：唯一维护的当前契约完整示例；旧 1.0 兼容性由测试覆盖。
+- [handoff.schema.json](schemas/handoff.schema.json)：机器字段；[test_validate_content.py](scripts/test_validate_content.py)：回归测试。
+- [evaluation](references/evaluation.md)：维护/迭代时的行为测试。

@@ -1,0 +1,48 @@
+{
+  "contract_version": "1.1",
+  "content_file": "presentation.md",
+  "target_renderer": "generic",
+  "readiness": "ready",
+  "revision": 2,
+  "content_sha256": "82e8b2d01752063e1ed1ff3c1540288d18ef4cb4808fedcf927d12d8c054850f",
+  "intent": {
+    "scene": "合成示例：售前知识助手试点设计对齐",
+    "primary_audience": "业务负责人（售前与技术同行为辅）",
+    "current_belief": "未知；假设可能以生成速度替代完整业务耗时",
+    "desired_belief": "试点应基于完整任务、可比基线、质量/出处/权限门禁",
+    "desired_action": "讨论拟确认任务、权限、验收口径及复盘责任",
+    "success_signal": "能复述为什么不承诺收益、列出启动前必须确认的输入及退出条件"
+  },
+  "adapter": {
+    "name": "h5-report-generator",
+    "theme": "dune",
+    "profile": "adaptive"
+  },
+  "unresolved": [],
+  "slides": [
+    {
+      "slide_id": "problem",
+      "role": "PROBLEM",
+      "chapter": "试点设计",
+      "title": "先固定售前答复任务，再比较人工与助手",
+      "visual_intent": "flow: 先定义任务、再记录人工基线、最后运行助手对照的拟议顺序；无实际结果",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "validation",
+      "role": "SOLUTION",
+      "chapter": "验收设计",
+      "title": "效率必须与答复质量、出处和权限一起验收",
+      "visual_intent": "table: 同一行保留维度、测量对象、核查方法及判定处置的精确关系；不虚构得分",
+      "speaker_notes_present": true
+    },
+    {
+      "slide_id": "next",
+      "role": "CTA",
+      "chapter": "行动对齐",
+      "title": "先确认任务、授权和验收，再决定是否启动试点",
+      "visual_intent": "cards: 三方职责并列；非顺序流程；末项说明决策条件",
+      "speaker_notes_present": true
+    }
+  ]
+}

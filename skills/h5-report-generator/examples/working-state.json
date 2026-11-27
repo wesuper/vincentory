@@ -1,0 +1,93 @@
+{
+  "stage": "READY",
+  "revision": 2,
+  "confirmed": {
+    "audience": "业务负责人（主受众）、售前与技术同行",
+    "objective": "对齐售前知识答复试点的任务、测量与退出条件（合成示例）",
+    "duration_minutes": 5,
+    "fixture": "合成场景；无真实试点或实际组织审批"
+  },
+  "assumptions": [
+    "拟用售前产品规格与限制问答作为可重复验证任务；须实际确认"
+  ],
+  "limitations": [
+    "没有真实内部基线或评估结果；不承诺收益",
+    "阈值、授权、人员、样本与日期待确认；本次只对齐设计，不启动试点"
+  ],
+  "open_questions": [],
+  "decision_log": [
+    {
+      "revision": 2,
+      "change": "以具体售前任务与拟议验收矩阵取代泛泛描述；保留无真实数据边界"
+    }
+  ],
+  "slide_maturity": {
+    "problem": "ready",
+    "validation": "ready",
+    "next": "ready"
+  },
+  "review": {
+    "intent": {
+      "result": "pass",
+      "basis": "合成场景目标限定为讨论设计；主受众与观察信号明确"
+    },
+    "narrative": {
+      "result": "pass",
+      "basis": "任务与基线→四维验收→分工及启动条件"
+    },
+    "evidence": {
+      "result": "pass",
+      "basis": "所有流程、验收、分工为拟议方案；无虚构数据或真实案例"
+    },
+    "audience_fit": {
+      "result": "pass",
+      "basis": "业务方关注收益和退出条件；售前/技术可以据任务、文档和验收核查"
+    },
+    "objections": {
+      "result": "pass",
+      "basis": "完整耗时、质量/出处、权限与公平比较均有明确处理"
+    },
+    "delivery": {
+      "result": "pass",
+      "basis": "每页有独立口述展开、转场、追问；总计3.7分钟"
+    },
+    "action": {
+      "result": "pass",
+      "basis": "明确拟议分工、输入、复盘条件，不假设人员与日期已确认"
+    },
+    "handoff": {
+      "result": "pass",
+      "basis": "已按 1.1 契约维护六文件，含逐页质量记录"
+    }
+  },
+  "quality_profile": "presentation-v2.1",
+  "slide_quality": {
+    "problem": {
+      "result": "pass",
+      "audience_question": "如何公平比较人工与助手完成售前答复的成本？",
+      "information_gain": "定义同任务、同资料、完整答复耗时及逐题对照，而非单纯模型生成速度",
+      "support": "合成拟议任务设计；无真实收益基线",
+      "visual_reason": "三个明确有先后关系的准备步骤，使用流程链",
+      "notes_gain": "以规格问答口述举例，并解释完整计时及归因",
+      "basis": "输入、输出、测量对象、版本授权可见；未承诺效率收益"
+    },
+    "validation": {
+      "result": "pass",
+      "audience_question": "怎样判定值得继续，什么情况应停止？",
+      "information_gain": "四项验收分别指定测量对象、核查方式与判定处置",
+      "support": "拟议验收矩阵，无已确认阈值或结果",
+      "visual_reason": "按同一行保留四维精确映射，表格优于虚构图表",
+      "notes_gain": "说明计时、错误口径先定、版本核查及权限正反向检查",
+      "basis": "关键条件与失败处置均可见；备注不替代边界"
+    },
+    "next": {
+      "result": "pass",
+      "audience_question": "谁提供什么输入，何时才讨论启动或扩围？",
+      "information_gain": "业务、技术安全、双方共同的具体输入与复盘决策职责",
+      "support": "拟议分工；未确认人员、日期、授权",
+      "visual_reason": "并列职责分组，不暗示先后或强行箭头",
+      "notes_gain": "口述启动前缺口、不能以演示成功替代验收",
+      "basis": "明确不采购或承诺上线，下一步具备可讨论清单"
+    }
+  }
+}

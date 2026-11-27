@@ -1,27 +1,31 @@
 {
   "main_claim": {
-    "text": "建议先验证知识复用价值，再决定规模化",
-    "status": "hypothesis"
+    "text": "先固定可比售前任务并通过质量、出处、权限验证，再评价成本与扩围",
+    "status": "recommendation"
   },
   "claims": [
     {
       "id": "c1",
-      "text": "知识分散可能降低复用效率",
-      "status": "hypothesis",
+      "text": "先固定售前答复任务，再比较人工与助手",
+      "status": "recommendation",
       "slides": [
-        "s01"
+        "problem"
       ],
-      "evidence_ids": []
+      "evidence_ids": [
+        "E-001"
+      ]
     },
     {
       "id": "c2",
-      "text": "场景化试点有助于验证收益",
-      "status": "derived",
+      "text": "效率必须与答复质量、出处和权限一起验收",
+      "status": "recommendation",
       "slides": [
-        "s02",
-        "s03"
+        "validation",
+        "next"
       ],
-      "evidence_ids": []
+      "evidence_ids": [
+        "E-002"
+      ]
     }
   ]
 }
