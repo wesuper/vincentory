@@ -110,73 +110,65 @@ strong {
     top: 0;
     left: 0;
     width: 0;
-    height: 3px;
+    height: 2px;
+    opacity: 0.65;
     background: linear-gradient(90deg, var(--accent), var(--accent-3));
     transition: width 0.4s ease;
     z-index: 1000;
 }
 
-/* === 右下胶囊导航（悬浮增亮） === */
+/* === 右下轻量导航：观众内容优先，保留鼠标/键盘/触屏 === */
 .navigation {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 14px;
+    right: 18px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: var(--glass);
-    padding: 8px 12px;
-    border-radius: 30px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    gap: 2px;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
     z-index: 1000;
-    opacity: 0.75;
-    transition: opacity 0.3s ease;
+    /* 不做容器 opacity：那会把文字与背景一起压暗，实测四主题下
+       --text-muted 从 5.2:1 掉到 2.4:1，低于 AA。低存在感靠字号与颜色，
+       不靠降低可读性。--ink-faint 本身已由 theme_contrast.py 守 4.5:1。 */
 }
-
-.navigation:hover {
-    opacity: 1;
-}
-
 .nav-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border: none;
-    background: var(--paper);
-    border-radius: 50%;
+    background: transparent;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: var(--accent);
-    font-size: 15px;
-    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
-}
-
-.nav-btn:hover {
-    background: var(--accent);
-    color: var(--surface);
-    transform: scale(1.06);
-}
-
-.nav-btn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* 页码：胶囊里显示 当前 / 总数 */
-.page-indicator {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--accent);
-    min-width: 62px;
-    text-align: center;
-    letter-spacing: 0.5px;
-}
-
-.page-indicator .total {
     color: var(--ink-faint);
-    font-weight: 500;
+    font-size: 11px;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+.nav-btn:hover { background: var(--tint); color: var(--ink); }
+.nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.page-indicator {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ink-faint);
+    min-width: 38px;
+    text-align: center;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.15s ease;
+}
+.navigation:hover .page-indicator,
+.navigation:focus-within .page-indicator { color: var(--ink); }
+.page-indicator .total { color: inherit; font-weight: 400; }
+@media (pointer: coarse) {
+    .nav-btn { width: 44px; height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .navigation, .nav-btn { transition: none; }
 }
 
 /* === 封面页 === */
@@ -520,13 +512,8 @@ strong {
     align-content: stretch;
 }
 
-/* 稀疏页的余量上下均分，而不是全堆在页脚：
- * 证据区自然高度小于剩余空间时，上下 auto 外边距平分余量 → 视觉上居中（杂志式留白）；
- * 内容撑满或溢出时 auto 外边距自动归零，不影响密排页。
- * 注意 .footnote 不参与均分：它应该贴在证据区下方，而不是被推到页面底部。 */
-/* 除了四宫格/指标行这类「块状」证据区，表格、风险卡、周节奏、时间轴同样会在
- * 1080p 下堆在页顶、页脚留几百 px 空白。它们也要参与余量均分，否则只有一部分
- * 页面类型受惠，生成者会以为模板坏了而自己加包装类。 */
+/* 证据紧随结论：不让短表格或单行证据漂浮在页面中央。
+ * 有意简洁页由内容设计决定；普通页不要通过 auto 边距制造内容脱节。 */
 .content-body > .card-grid,
 .content-body > .stats-row,
 .content-body > .exp-grid,
@@ -534,31 +521,11 @@ strong {
 .content-body > .mini-table,
 .content-body > .risk-cards,
 .content-body > .week-panel,
-.content-body > .timeline {
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-/* 脚注要跟着它注释的证据区走，而不是被 margin:auto 甩到页底。
- * 反例：指标行下面还有一行 principle-row 再跟脚注，脚注与它所注释的表格
- * 相隔近 200px，读者根本不知道它在注哪一行。
- * 规则：**最后一个子元素是脚注时**，脚注自己承担「组的下边距」，
- * 它前面那个元素不再把下边距撑满。用 :has() 判定，避免依赖具体页面结构。 */
-.content-body:has(> .footnote:last-child) > .footnote:last-child {
-    margin-bottom: auto;
-}
-
-.content-body:has(> .footnote:last-child) > :nth-last-child(2) {
+.content-body > .timeline,
+.content-body > .footnote {
+    margin-top: 0;
     margin-bottom: 0;
 }
-
-/* 不支持 :has() 的浏览器：脚注紧贴上方内容，不做整组居中（可接受的退化） */
-@supports not selector(:has(*)) {
-    .content-body > .footnote {
-        margin-bottom: 0;
-    }
-}
-
 .content-body > .card-grid > .card,
 .content-body > .stats-row > .stat-card,
 .content-body > .exp-grid > .exp-card,
@@ -581,8 +548,7 @@ strong {
     flex-direction: column;
     gap: var(--gap-md, 14px);
     min-height: 0;
-    /* 证据区靠 margin:auto 在剩余空间里居中；脚注必须跟着证据区走，
-     * 不能被同一条 auto 边距甩到页面底部——那样和它注释的表格相隔半屏。 */
+    /* 证据区与结论紧邻；脚注与其所注释证据相邻。 */
 }
 
 /* 结论条：每页第一块，先给结论再展开 */
@@ -2963,4 +2929,79 @@ body.mode-preview .slide {
         page-break-after: always;
         animation: none;
     }
+}
+
+/* V2.1 基础视觉：流程 / 并列证据 / 精确比较。信息关系由内容源决定。 */
+.evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(14px, 1.6vw, 30px);
+    margin-top: clamp(12px, 1.2vw, 24px);
+    align-items: stretch;
+}
+.evidence-grid[data-cols="2"] { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.evidence-grid[data-cols="4"] { grid-template-columns: repeat(4, minmax(0,1fr)); }
+.evidence-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line-2);
+    border-top: 3px solid var(--accent-2);
+    border-radius: var(--radius-sm);
+    padding: clamp(18px,2.0vw,38px);
+    min-width: 0;
+}
+.evidence-step {
+    display: block;
+    font-size: clamp(24px,2.4vw,46px);
+    color: var(--accent);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 10px;
+}
+.evidence-title {
+    color: var(--accent-ink);
+    font-size: clamp(20px,1.65vw,32px);
+    line-height: 1.35;
+    margin-bottom: clamp(14px,1.3vw,24px);
+}
+.evidence-card .card-list { display: grid; gap: 0; }
+.evidence-card .card-item {
+    margin: 0;
+    padding: clamp(10px,1vw,18px) 0;
+    border-top: 1px solid var(--line-2);
+    font-size: clamp(17px,1.3vw,25px);
+    line-height: 1.5;
+    color: var(--text-body);
+    overflow-wrap: anywhere;
+}
+.evidence-flow .evidence-card:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    top: 48%;
+    right: calc(-1 * clamp(14px,1.6vw,30px));
+    width: clamp(14px,1.6vw,30px);
+    text-align: center;
+    font-size: clamp(17px,1.6vw,30px);
+    color: var(--accent);
+}
+.content-body > .evidence-table {
+    margin-top: clamp(12px,1.2vw,24px);
+    margin-bottom: 0;
+    box-shadow: none;
+    border: 1px solid var(--line-2);
+    table-layout: auto;
+}
+.evidence-table th, .evidence-table td {
+    padding: clamp(14px,1.6vw,30px) clamp(12px,1.35vw,25px);
+    font-size: clamp(17px,1.35vw,26px);
+    line-height: 1.45;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.evidence-table th { font-weight: 600; }
+.evidence-table td:first-child { font-weight: 600; color: var(--accent-ink); }
+@media (max-width: 768px) {
+    .evidence-grid, .evidence-grid[data-cols="2"], .evidence-grid[data-cols="4"] { grid-template-columns: 1fr; }
+    .evidence-flow .evidence-card:not(:last-child)::after { content: none; }
+    .evidence-table th, .evidence-table td { padding: 8px; font-size: 13px; }
 }

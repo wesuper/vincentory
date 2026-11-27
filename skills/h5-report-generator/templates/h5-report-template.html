@@ -126,73 +126,65 @@ strong {
     top: 0;
     left: 0;
     width: 0;
-    height: 3px;
+    height: 2px;
+    opacity: 0.65;
     background: linear-gradient(90deg, var(--accent), var(--accent-3));
     transition: width 0.4s ease;
     z-index: 1000;
 }
 
-/* === 右下胶囊导航（悬浮增亮） === */
+/* === 右下轻量导航：观众内容优先，保留鼠标/键盘/触屏 === */
 .navigation {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 14px;
+    right: 18px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: var(--glass);
-    padding: 8px 12px;
-    border-radius: 30px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    gap: 2px;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
     z-index: 1000;
-    opacity: 0.75;
-    transition: opacity 0.3s ease;
+    /* 不做容器 opacity：那会把文字与背景一起压暗，实测四主题下
+       --text-muted 从 5.2:1 掉到 2.4:1，低于 AA。低存在感靠字号与颜色，
+       不靠降低可读性。--ink-faint 本身已由 theme_contrast.py 守 4.5:1。 */
 }
-
-.navigation:hover {
-    opacity: 1;
-}
-
 .nav-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border: none;
-    background: var(--paper);
-    border-radius: 50%;
+    background: transparent;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: var(--accent);
-    font-size: 15px;
-    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
-}
-
-.nav-btn:hover {
-    background: var(--accent);
-    color: var(--surface);
-    transform: scale(1.06);
-}
-
-.nav-btn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* 页码：胶囊里显示 当前 / 总数 */
-.page-indicator {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--accent);
-    min-width: 62px;
-    text-align: center;
-    letter-spacing: 0.5px;
-}
-
-.page-indicator .total {
     color: var(--ink-faint);
-    font-weight: 500;
+    font-size: 11px;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+.nav-btn:hover { background: var(--tint); color: var(--ink); }
+.nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.page-indicator {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ink-faint);
+    min-width: 38px;
+    text-align: center;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.15s ease;
+}
+.navigation:hover .page-indicator,
+.navigation:focus-within .page-indicator { color: var(--ink); }
+.page-indicator .total { color: inherit; font-weight: 400; }
+@media (pointer: coarse) {
+    .nav-btn { width: 44px; height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .navigation, .nav-btn { transition: none; }
 }
 
 /* === 封面页 === */
@@ -536,13 +528,8 @@ strong {
     align-content: stretch;
 }
 
-/* 稀疏页的余量上下均分，而不是全堆在页脚：
- * 证据区自然高度小于剩余空间时，上下 auto 外边距平分余量 → 视觉上居中（杂志式留白）；
- * 内容撑满或溢出时 auto 外边距自动归零，不影响密排页。
- * 注意 .footnote 不参与均分：它应该贴在证据区下方，而不是被推到页面底部。 */
-/* 除了四宫格/指标行这类「块状」证据区，表格、风险卡、周节奏、时间轴同样会在
- * 1080p 下堆在页顶、页脚留几百 px 空白。它们也要参与余量均分，否则只有一部分
- * 页面类型受惠，生成者会以为模板坏了而自己加包装类。 */
+/* 证据紧随结论：不让短表格或单行证据漂浮在页面中央。
+ * 有意简洁页由内容设计决定；普通页不要通过 auto 边距制造内容脱节。 */
 .content-body > .card-grid,
 .content-body > .stats-row,
 .content-body > .exp-grid,
@@ -550,31 +537,11 @@ strong {
 .content-body > .mini-table,
 .content-body > .risk-cards,
 .content-body > .week-panel,
-.content-body > .timeline {
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-/* 脚注要跟着它注释的证据区走，而不是被 margin:auto 甩到页底。
- * 反例：指标行下面还有一行 principle-row 再跟脚注，脚注与它所注释的表格
- * 相隔近 200px，读者根本不知道它在注哪一行。
- * 规则：**最后一个子元素是脚注时**，脚注自己承担「组的下边距」，
- * 它前面那个元素不再把下边距撑满。用 :has() 判定，避免依赖具体页面结构。 */
-.content-body:has(> .footnote:last-child) > .footnote:last-child {
-    margin-bottom: auto;
-}
-
-.content-body:has(> .footnote:last-child) > :nth-last-child(2) {
+.content-body > .timeline,
+.content-body > .footnote {
+    margin-top: 0;
     margin-bottom: 0;
 }
-
-/* 不支持 :has() 的浏览器：脚注紧贴上方内容，不做整组居中（可接受的退化） */
-@supports not selector(:has(*)) {
-    .content-body > .footnote {
-        margin-bottom: 0;
-    }
-}
-
 .content-body > .card-grid > .card,
 .content-body > .stats-row > .stat-card,
 .content-body > .exp-grid > .exp-card,
@@ -597,8 +564,7 @@ strong {
     flex-direction: column;
     gap: var(--gap-md, 14px);
     min-height: 0;
-    /* 证据区靠 margin:auto 在剩余空间里居中；脚注必须跟着证据区走，
-     * 不能被同一条 auto 边距甩到页面底部——那样和它注释的表格相隔半屏。 */
+    /* 证据区与结论紧邻；脚注与其所注释证据相邻。 */
 }
 
 /* 结论条：每页第一块，先给结论再展开 */
@@ -2981,6 +2947,81 @@ body.mode-preview .slide {
     }
 }
 
+/* V2.1 基础视觉：流程 / 并列证据 / 精确比较。信息关系由内容源决定。 */
+.evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(14px, 1.6vw, 30px);
+    margin-top: clamp(12px, 1.2vw, 24px);
+    align-items: stretch;
+}
+.evidence-grid[data-cols="2"] { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.evidence-grid[data-cols="4"] { grid-template-columns: repeat(4, minmax(0,1fr)); }
+.evidence-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line-2);
+    border-top: 3px solid var(--accent-2);
+    border-radius: var(--radius-sm);
+    padding: clamp(18px,2.0vw,38px);
+    min-width: 0;
+}
+.evidence-step {
+    display: block;
+    font-size: clamp(24px,2.4vw,46px);
+    color: var(--accent);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 10px;
+}
+.evidence-title {
+    color: var(--accent-ink);
+    font-size: clamp(20px,1.65vw,32px);
+    line-height: 1.35;
+    margin-bottom: clamp(14px,1.3vw,24px);
+}
+.evidence-card .card-list { display: grid; gap: 0; }
+.evidence-card .card-item {
+    margin: 0;
+    padding: clamp(10px,1vw,18px) 0;
+    border-top: 1px solid var(--line-2);
+    font-size: clamp(17px,1.3vw,25px);
+    line-height: 1.5;
+    color: var(--text-body);
+    overflow-wrap: anywhere;
+}
+.evidence-flow .evidence-card:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    top: 48%;
+    right: calc(-1 * clamp(14px,1.6vw,30px));
+    width: clamp(14px,1.6vw,30px);
+    text-align: center;
+    font-size: clamp(17px,1.6vw,30px);
+    color: var(--accent);
+}
+.content-body > .evidence-table {
+    margin-top: clamp(12px,1.2vw,24px);
+    margin-bottom: 0;
+    box-shadow: none;
+    border: 1px solid var(--line-2);
+    table-layout: auto;
+}
+.evidence-table th, .evidence-table td {
+    padding: clamp(14px,1.6vw,30px) clamp(12px,1.35vw,25px);
+    font-size: clamp(17px,1.35vw,26px);
+    line-height: 1.45;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.evidence-table th { font-weight: 600; }
+.evidence-table td:first-child { font-weight: 600; color: var(--accent-ink); }
+@media (max-width: 768px) {
+    .evidence-grid, .evidence-grid[data-cols="2"], .evidence-grid[data-cols="4"] { grid-template-columns: 1fr; }
+    .evidence-flow .evidence-card:not(:last-child)::after { content: none; }
+    .evidence-table th, .evidence-table td { padding: 8px; font-size: 13px; }
+}
+
 /* === THEME_CSS === */
 /* 当前主题：light-gradient */
 /* ============================================================
@@ -3282,7 +3323,7 @@ body.mode-preview .slide {
 
     </div>
 
-    <!-- 导航：右下胶囊 + 页码 -->
+    <!-- 导航：右下轻量平面 + 页码 -->
     <div class="navigation">
         <button class="nav-btn" id="prevBtn" data-action="prev" aria-label="上一页">◀</button>
         <span class="page-indicator"><span id="currentPage">1</span> / <span class="total" id="totalPages">1</span></span>
@@ -4953,96 +4994,96 @@ body.mode-preview .slide {
     <script>
         window.SPEAKER_NOTES = [
             {
-                id: 'cover',
-                title: '封面 · 本季度一句话结论',
-                section: '开场',
-                minutes: 1,
-                purpose: '让听众在 30 秒内记住三个数字，并知道后面会讲什么',
-                talk: [
-                    '先报结论：四项指标全部达标，逾期率降到 2.1%',
-                    '点出规模：新增放款 128.6 亿元，环比 +12.4%',
-                    '预告风险：Q4 唯一需要盯的是投诉率，最后一页会展开'
+                "id": "cover",
+                "title": "封面 · 本季度一句话结论",
+                "section": "开场",
+                "minutes": 1,
+                "purpose": "让听众在 30 秒内记住三个数字，并知道后面会讲什么",
+                "talk": [
+                    "先报结论：四项指标全部达标，逾期率降到 2.1%",
+                    "点出规模：新增放款 128.6 亿元，环比 +12.4%",
+                    "预告风险：Q4 唯一需要盯的是投诉率，最后一页会展开"
                 ],
-                transition: '结论已经给出，下一屏用目录交代证据顺序',
-                advance: '说完“最后一页会展开”后翻页',
-                cue: '此处可停顿一秒，等听众抬头',
-                delivery: '语速放慢，数字重读'
+                "transition": "结论已经给出，下一屏用目录交代证据顺序",
+                "advance": "说完“最后一页会展开”后翻页",
+                "cue": "此处可停顿一秒，等听众抬头",
+                "delivery": "语速放慢，数字重读"
             },
             {
-                id: 'toc',
-                title: '目录 · 三条主线',
-                section: '开场',
-                minutes: 0.5,
-                purpose: '让听众知道三个章节各自回答什么问题',
-                talk: [
-                    '第一章讲规模从哪来，第二章讲风险怎么稳住，第三章讲 Q4 怎么收口',
-                    '强调每章标题本身就是结论，细节可以会后看材料'
+                "id": "toc",
+                "title": "目录 · 三条主线",
+                "section": "开场",
+                "minutes": 0.5,
+                "purpose": "让听众知道三个章节各自回答什么问题",
+                "talk": [
+                    "第一章讲规模从哪来，第二章讲风险怎么稳住，第三章讲 Q4 怎么收口",
+                    "强调每章标题本身就是结论，细节可以会后看材料"
                 ],
-                transition: '先看规模这条线',
-                advance: '不需要逐条念目录'
+                "transition": "先看规模这条线",
+                "advance": "不需要逐条念目录"
             },
             {
-                id: 'business',
-                title: '业务概况：增长来自下沉客群',
-                section: '业务概况',
-                minutes: 3,
-                purpose: '证明增长是结构性的，而不是一次性冲量',
-                talk: [
-                    '新增放款环比 +12.4%，增量主要来自下沉客群',
-                    '复贷客户贡献 63%，说明留存比拉新更关键',
-                    '自动化审批率 64%，人工复审量同比降 18%'
+                "id": "business",
+                "title": "业务概况：增长来自下沉客群",
+                "section": "业务概况",
+                "minutes": 3,
+                "purpose": "证明增长是结构性的，而不是一次性冲量",
+                "talk": [
+                    "新增放款环比 +12.4%，增量主要来自下沉客群",
+                    "复贷客户贡献 63%，说明留存比拉新更关键",
+                    "自动化审批率 64%，人工复审量同比降 18%"
                 ],
-                transition: '规模上来了，接下来看风险有没有同步恶化',
-                advance: '讲到“人工复审量下降”后翻页',
-                interaction: '可问：在座有多少人感受到审批变快了？',
-                fallback: '如果被追问客群口径，指向脚注并说明以风控口径为准'
+                "transition": "规模上来了，接下来看风险有没有同步恶化",
+                "advance": "讲到“人工复审量下降”后翻页",
+                "interaction": "可问：在座有多少人感受到审批变快了？",
+                "fallback": "如果被追问客群口径，指向脚注并说明以风控口径为准"
             },
             {
-                id: 'metrics',
-                title: '风险指标：四项全部达标',
-                section: '风险指标',
-                minutes: 4,
-                purpose: '把“达标”拆成四个可核对的指标',
-                talk: [
-                    '逾期率 2.1%，低于 2.5% 的目标，连续三个季度下降',
-                    '回收率 87%，高于目标两个百分点',
-                    '投诉率 0.3%，离预警线只剩 0.05 个百分点，这才是真正的风险',
-                    '自动化率 64%，是前面效率提升的来源'
+                "id": "metrics",
+                "title": "风险指标：四项全部达标",
+                "section": "风险指标",
+                "minutes": 4,
+                "purpose": "把“达标”拆成四个可核对的指标",
+                "talk": [
+                    "逾期率 2.1%，低于 2.5% 的目标，连续三个季度下降",
+                    "回收率 87%，高于目标两个百分点",
+                    "投诉率 0.3%，离预警线只剩 0.05 个百分点，这才是真正的风险",
+                    "自动化率 64%，是前面效率提升的来源"
                 ],
-                transition: '达标不等于可以松手，所以有了 Q4 的三步计划',
-                advance: '讲完投诉率预警后停一下，再翻页',
-                cue: '投诉率这里放慢，这是全场最需要被记住的风险'
+                "transition": "达标不等于可以松手，所以有了 Q4 的三步计划",
+                "advance": "讲完投诉率预警后停一下，再翻页",
+                "cue": "投诉率这里放慢，这是全场最需要被记住的风险"
             },
             {
-                id: 'plan',
-                title: 'Q4 计划：复盘、迭代、收口',
-                section: '下季度计划',
-                minutes: 3,
-                purpose: '给出可执行的时间表，而不是口号',
-                talk: [
-                    '10 月复盘，定位投诉率上升根因',
-                    '11 月完成催收策略模型迭代，灰度后全量，目标自动化率 70%',
-                    '12 月中旬完成年度指标收口：逾期率 2.3% 以内，投诉率回到 0.25%'
+                "id": "plan",
+                "title": "Q4 计划：复盘、迭代、收口",
+                "section": "下季度计划",
+                "minutes": 3,
+                "purpose": "给出可执行的时间表，而不是口号",
+                "talk": [
+                    "10 月复盘，定位投诉率上升根因",
+                    "11 月完成催收策略模型迭代，灰度后全量，目标自动化率 70%",
+                    "12 月中旬完成年度指标收口：逾期率 2.3% 以内，投诉率回到 0.25%"
                 ],
-                transition: '最后用三句话收口',
-                advance: '说到 12 月中旬这个时间点后翻页'
+                "transition": "最后用三句话收口",
+                "advance": "说到 12 月中旬这个时间点后翻页"
             },
             {
-                id: 'closing',
-                title: '收尾 · 三句结论',
-                section: '收尾',
-                minutes: 1,
-                purpose: '复述结论并留出提问时间',
-                talk: [
-                    '业务达标、风险可控、Q4 盯投诉率',
-                    '需要协调的资源请在提问环节提出'
+                "id": "closing",
+                "title": "收尾 · 三句结论",
+                "section": "收尾",
+                "minutes": 1,
+                "purpose": "复述结论并留出提问时间",
+                "talk": [
+                    "业务达标、风险可控、Q4 盯投诉率",
+                    "需要协调的资源请在提问环节提出"
                 ],
-                transition: '进入 Q&A',
-                interaction: '预留 5 分钟提问',
-                advance: '停在尾页，不要提前退出'
+                "transition": "进入 Q&A",
+                "interaction": "预留 5 分钟提问",
+                "advance": "停在尾页，不要提前退出"
             }
         ];
-    </script>
+</script>
 </body>
 
 </html>
