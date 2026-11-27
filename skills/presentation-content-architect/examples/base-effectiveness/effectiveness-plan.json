@@ -1,0 +1,46 @@
+{
+  "profile": "communication-effectiveness",
+  "content_sha256": "82e8b2d01752063e1ed1ff3c1540288d18ef4cb4808fedcf927d12d8c054850f",
+  "revision": 1,
+  "handoff_sha256": "b40b1fb20af751d72ff021e2562217b17147e4e3284ad3ab9a14d069b1517e3f",
+  "state_sha256": "accb1ca7e1ced9c342e3878090031cbfde9d9cfe2ed5a6427db6f269203c3abd",
+  "dimensions": {
+    "insight": {
+      "applicable": false,
+      "reason": "本例不单独测量该维度；仅用于试点设计对齐"
+    },
+    "understanding": {
+      "applicable": true,
+      "reason": "确认试点验收口径被理解",
+      "baseline": "未知；未实际观察",
+      "criterion": "能够复述为什么不能直接承诺收益及质量、出处、权限门禁",
+      "method": "不看稿复述",
+      "window": "会末",
+      "owner": "拟由会议主持人记录",
+      "slide_ids": [
+        "validation",
+        "next"
+      ]
+    },
+    "credibility": {
+      "applicable": false,
+      "reason": "本例不单独测量该维度；仅用于试点设计对齐"
+    },
+    "transfer": {
+      "applicable": false,
+      "reason": "本例不单独测量该维度；仅用于试点设计对齐"
+    },
+    "action": {
+      "applicable": true,
+      "reason": "会议任务是讨论试点准备条件",
+      "baseline": "未知；未实际观察",
+      "criterion": "明确拟确认任务、授权、验收及负责人，允许有依据地拒绝启动",
+      "method": "记录明确决策与未决事项",
+      "window": "会末",
+      "owner": "拟由会议主持人记录",
+      "slide_ids": [
+        "next"
+      ]
+    }
+  }
+}

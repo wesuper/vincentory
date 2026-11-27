@@ -5,6 +5,7 @@ from pathlib import Path
 from html.parser import HTMLParser
 from render_reference import plain
 from content_contract import digest
+from prepare_render import needs_preview
 
 class Slides(HTMLParser):
     def __init__(self):super().__init__(convert_charrefs=True);self.pages=[];self.current=None;self.skip=0
@@ -40,7 +41,7 @@ def verify(plan,html):
         actual=norm(''.join(page['text']))
         for val in required(s):
             if val and norm(val) not in actual:errors.append(f'{s["slide_id"]}: missing visible text {val[:100]}')
-        if (plan['source_readiness']!='ready' or plan.get('content_quality',{}).get('status')!='reviewed') and norm('预览｜内容待确认') not in actual:errors.append(f'{s["slide_id"]}: missing preview label')
+        if needs_preview(plan) and norm('预览｜内容待确认') not in actual:errors.append(f'{s["slide_id"]}: missing preview label')
     m=re.search(r'window\.SPEAKER_NOTES\s*=\s*',html)
     if not m:errors.append('missing notes')
     else:
@@ -48,6 +49,17 @@ def verify(plan,html):
             notes,_=json.JSONDecoder().raw_decode(html[m.end():]);expected=[s['notes'] for s in slides]
             if notes!=expected:errors.append('notes differ from source (including ID/order/time)')
         except ValueError:errors.append('notes must be JSON')
+    route_matches=list(re.finditer(r'window\.PRESENTATION_ROUTE\s*=\s*(?=\{)',html))
+    exp=plan.get('experience_quality',{})
+    if not needs_preview(plan) and exp.get('status')=='reviewed':
+        expected_route={'core_slide_ids':exp['core_slide_ids'],'short_minutes':round(exp['short_minutes'],6)}
+        if len(route_matches)!=1: errors.append('missing or duplicate reviewed short route')
+        else:
+            try:
+                route,_=json.JSONDecoder().raw_decode(html[route_matches[0].end():])
+                if route!=expected_route: errors.append('short route differs from reviewed plan')
+            except ValueError: errors.append('short route must be JSON')
+    elif route_matches: errors.append('unreviewed short route must not be activated')
     return errors
 
 def main():

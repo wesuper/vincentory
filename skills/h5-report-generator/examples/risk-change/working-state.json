@@ -1,0 +1,332 @@
+{
+  "stage": "READY",
+  "revision": 1,
+  "confirmed": {
+    "fixture": "纯合成教学示例；无真实组织批准",
+    "duration_minutes": 6
+  },
+  "assumptions": [
+    "听众权限、原承诺、风险疑点均为模拟；真实会议需核对"
+  ],
+  "limitations": [
+    "未提供真实生产证据或消费者版本；所有动作拟议",
+    "不授权生产变更或承诺日期"
+  ],
+  "open_questions": [],
+  "decision_log": [
+    {
+      "revision": 1,
+      "change": "构建合成示例的内容、证据及交接记录"
+    }
+  ],
+  "slide_maturity": {
+    "decision": "ready",
+    "delta": "ready",
+    "controls": "ready",
+    "mechanism": "ready",
+    "next": "ready"
+  },
+  "quality_profile": "slide-review",
+  "review": {
+    "intent": {
+      "result": "pass",
+      "basis": "仅讨论变更路径；无生产放行，明确实际权限未知"
+    },
+    "narrative": {
+      "result": "pass",
+      "basis": "建议→偏差→门禁→可选技术细节→责任与更新"
+    },
+    "evidence": {
+      "result": "pass",
+      "basis": "所有情境和动作均明确合成/拟议；没有生产数据"
+    },
+    "audience_fit": {
+      "result": "pass",
+      "basis": "管理主线关注决策、预期与门禁，技术同行可下钻"
+    },
+    "objections": {
+      "result": "pass",
+      "basis": "覆盖不足、回退不完整、日期不确定均有明确答复"
+    },
+    "delivery": {
+      "result": "pass",
+      "basis": "每页有口述和 cue，技术深挖可安全跳过"
+    },
+    "action": {
+      "result": "pass",
+      "basis": "只拟确认责任与下一次更新，未验证不放行"
+    },
+    "handoff": {
+      "result": "pass",
+      "basis": "六文件与逐页质量记录完整，含听众旅程及核心路线"
+    }
+  },
+  "slide_quality": {
+    "decision": {
+      "result": "pass",
+      "audience_question": "让负责人先判断当前是否应按原计划切换。",
+      "information_gain": "三条实际讨论路径及各自条件",
+      "support": "模拟案例｜本次只讨论变更路径，不代表生产放行或新日期承诺。",
+      "visual_reason": "decision: 对照三条变更路径及成立条件；没有风险概率或真实结果",
+      "notes_gain": "假设团队准备更新事件字段，旧消费者可能无法读取新格式。此处选择的是下一步验证路径，而非承诺上线。即使选择限定验证，也必须经过真实权限与回退检查。",
+      "basis": "已做合成稿语义审查；关键边界在可见页，未声称真实效果"
+    },
+    "delta": {
+      "result": "pass",
+      "audience_question": "区分原计划、风险假设和未确认的预测。",
+      "information_gain": "区分原计划、线索与拟议调整",
+      "support": "假设输入：旧消费者可能无法解析新字段；实际影响范围、原因与验证结果未知。",
+      "visual_reason": "expectation: 原计划、当前认知与拟议动作的对照；不得绘制虚构日期",
+      "notes_gain": "原计划只是合成会议输入。我们尚没有消费者版本清单、生产观测或复现，所以不能计算影响比例或新的交付日期。要把风险提出的时间和原计划真实记录补齐。",
+      "basis": "已做合成稿语义审查；关键边界在可见页，未声称真实效果"
+    },
+    "controls": {
+      "result": "pass",
+      "audience_question": "让听众理解风险控制与停止逻辑，而不是把回滚当保证。",
+      "information_gain": "风险、验证与停止条件逐项对应",
+      "support": "拟议门禁｜阈值、责任人与授权须由实际团队确认；不可逆变更不得先行。",
+      "visual_reason": "risk: 风险—监测—处置精确映射；不捏造概率、阈值",
+      "notes_gain": "每条风险都有对应的测试与处置；不能把一次通过误认为所有消费者都兼容。先做隔离测试，只有验证范围、告警、回退与实际授权同时具备，才讨论受控灰度。异常应停止并升级，不是默认扩大。",
+      "basis": "已做合成稿语义审查；关键边界在可见页，未声称真实效果"
+    },
+    "mechanism": {
+      "result": "pass",
+      "audience_question": "向技术同行展开如何设计最小兼容测试。",
+      "information_gain": "版本组合与恢复的拟议最小验证",
+      "support": "拟议最小验证设计｜合成事件不是生产验证结果。",
+      "visual_reason": "flow: 按构造样例、版本组合、恢复验证的明确顺序；无实际测试结果",
+      "notes_gain": "此页是可选技术深挖。拟用版本组合和事件输入构造兼容矩阵，记录输入输出和负例，再检查恢复后的数据可读性。真实环境与版本须由实际系统提供。",
+      "basis": "已做合成稿语义审查；关键边界在可见页，未声称真实效果"
+    },
+    "next": {
+      "result": "pass",
+      "audience_question": "让实际授权者明确下一步而非误以为已经决定上线。",
+      "information_gain": "拟责任、更新与授权分工",
+      "support": "本次拟确认路径；全量日期、生产权限和放行仍待实际负责人确认。",
+      "visual_reason": "action: 并列角色和待确认动作，不暗示真实承诺",
+      "notes_gain": "请会议参与方确认实际负责人、下一次更新时间及需要看到的证据；若验证不充分，记录不放行与升级路径。会议可形成路径共识，但不能替代正式生产变更批准。",
+      "basis": "已做合成稿语义审查；关键边界在可见页，未声称真实效果"
+    }
+  },
+  "experience": {
+    "scene": "risk_change",
+    "secondary_scenes": [
+      "expectation_management"
+    ],
+    "audience": {
+      "authority": "实际变更授权方待确认；本稿不代替正式审批",
+      "prior_knowledge": "假设管理者理解交付目标，技术同行理解接口与事件",
+      "stakes": "交付预期、客户与数据风险、责任",
+      "barrier": "可能将计划视为承诺或把回滚当保证（推测）",
+      "evidence_threshold": "生产放行需实际兼容覆盖、监测、回退与授权",
+      "secondary_audience": "技术同行可听 mechanism；主线不依赖其术语",
+      "basis": "纯合成模拟；无实际听众画像"
+    },
+    "outcome": {
+      "recall": "兼容和回退未验证，不扩大暴露；核验后再议交付",
+      "observable_signal": "准确复述不放行条件、明确责任与更新检查点",
+      "check_method": "会议结束前询问负责人并记录答复，未观察不写已达成",
+      "next_step": "拟确认验证角色、更新检查点与变更授权路径",
+      "success_boundary": "不保证实际放行、收益或新日期",
+      "follow_up": "实际会议后记录决策、负责人和已确认更新时间",
+      "non_goal": "不申请正式生产放行或承诺全量日期"
+    },
+    "opening": {
+      "why_now": "原全量计划存在未验证兼容线索，需在扩大前讨论",
+      "promise": "听完知道选项、门禁与需确认的责任",
+      "tension": "交付原目标与未验证风险冲突"
+    },
+    "scene_checks": {
+      "risk_change.change_trigger": {
+        "status": "proposed",
+        "slide_ids": [
+          "delta"
+        ],
+        "basis": "合成拟议分析：原全量目标已存在兼容性疑点，新日期尚不能确定",
+        "gap_action": "实际会议核对对应原始资料、权限和验证证据；未通过不放行"
+      },
+      "risk_change.impact_scope": {
+        "status": "proposed",
+        "slide_ids": [
+          "delta",
+          "controls"
+        ],
+        "basis": "合成拟议分析：原全量目标已存在兼容性疑点，新日期尚不能确定；验证兼容性和回退能力之前，不扩大暴露",
+        "gap_action": "实际会议核对对应原始资料、权限和验证证据；未通过不放行"
+      },
+      "risk_change.risk_controls": {
+        "status": "proposed",
+        "slide_ids": [
+          "controls",
+          "mechanism"
+        ],
+        "basis": "合成拟议分析：验证兼容性和回退能力之前，不扩大暴露；兼容性验证要同时覆盖旧读者、新写者与恢复路径",
+        "gap_action": "实际会议核对对应原始资料、权限和验证证据；未通过不放行"
+      },
+      "risk_change.go_no_go_rollback": {
+        "status": "proposed",
+        "slide_ids": [
+          "decision",
+          "controls"
+        ],
+        "basis": "合成拟议分析：建议暂缓全量切换，先验证旧消费者兼容性；验证兼容性和回退能力之前，不扩大暴露",
+        "gap_action": "实际会议核对对应原始资料、权限和验证证据；未通过不放行"
+      },
+      "risk_change.owner_escalation": {
+        "status": "proposed",
+        "slide_ids": [
+          "next"
+        ],
+        "basis": "合成拟议分析：确认验证责任和下一次检查点，再决定是否重排交付",
+        "gap_action": "实际会议核对对应原始资料、权限和验证证据；未通过不放行"
+      },
+      "expectation_management.baseline_commitment": {
+        "status": "proposed",
+        "slide_ids": [
+          "delta"
+        ],
+        "basis": "合成拟议分析：原全量目标已存在兼容性疑点，新日期尚不能确定",
+        "gap_action": "实际会议核对对应原始资料、权限和验证证据；未通过不放行"
+      },
+      "expectation_management.delta_forecast": {
+        "status": "proposed",
+        "slide_ids": [
+          "delta"
+        ],
+        "basis": "合成拟议分析：原全量目标已存在兼容性疑点，新日期尚不能确定",
+        "gap_action": "实际会议核对对应原始资料、权限和验证证据；未通过不放行"
+      },
+      "expectation_management.cause_uncertainty": {
+        "status": "proposed",
+        "slide_ids": [
+          "delta",
+          "controls"
+        ],
+        "basis": "合成拟议分析：原全量目标已存在兼容性疑点，新日期尚不能确定；验证兼容性和回退能力之前，不扩大暴露",
+        "gap_action": "实际会议核对对应原始资料、权限和验证证据；未通过不放行"
+      },
+      "expectation_management.replan_decision": {
+        "status": "proposed",
+        "slide_ids": [
+          "decision",
+          "delta"
+        ],
+        "basis": "合成拟议分析：建议暂缓全量切换，先验证旧消费者兼容性；原全量目标已存在兼容性疑点，新日期尚不能确定",
+        "gap_action": "实际会议核对对应原始资料、权限和验证证据；未通过不放行"
+      },
+      "expectation_management.next_update": {
+        "status": "proposed",
+        "slide_ids": [
+          "next"
+        ],
+        "basis": "合成拟议分析：确认验证责任和下一次检查点，再决定是否重排交付",
+        "gap_action": "实际会议核对对应原始资料、权限和验证证据；未通过不放行"
+      }
+    },
+    "journey": {
+      "decision": {
+        "beat": "orient",
+        "audience_shift": "让负责人先判断当前是否应按原计划切换。",
+        "question": "建议暂缓全量切换，先验证旧消费者兼容性",
+        "listen_cue": "先指三条路径，强调全量与限定验证的不同决策范围。",
+        "check": "询问负责人是否同意先不扩大暴露；记录实际意见而非默认赞成。",
+        "recovery": "无生产批准；如无授权则暂缓变更。",
+        "priority": "core",
+        "basis": "稿件内关注点与证据对应；实际听众尚未观察"
+      },
+      "delta": {
+        "beat": "tension",
+        "audience_shift": "区分原计划、风险假设和未确认的预测。",
+        "question": "原全量目标已存在兼容性疑点，新日期尚不能确定",
+        "listen_cue": "沿同一行对照原计划、当前认知和调整。",
+        "check": "请听众复述哪些已知、哪些未知；若混淆则回到第二列。",
+        "recovery": "未提供真实承诺记录和日期；需在实际会议前核对。",
+        "priority": "core",
+        "basis": "稿件内关注点与证据对应；实际听众尚未观察"
+      },
+      "controls": {
+        "beat": "decide",
+        "audience_shift": "让听众理解风险控制与停止逻辑，而不是把回滚当保证。",
+        "question": "验证兼容性和回退能力之前，不扩大暴露",
+        "listen_cue": "逐行从风险读到停止条件，最后指向回退。",
+        "check": "问如果回退验证失败是否仍可全量；预期应回答不放行。",
+        "recovery": "没有真实阈值、生产数据或回退证据；无法保证上线。",
+        "priority": "core",
+        "basis": "稿件内关注点与证据对应；实际听众尚未观察"
+      },
+      "mechanism": {
+        "beat": "explain",
+        "audience_shift": "向技术同行展开如何设计最小兼容测试。",
+        "question": "兼容性验证要同时覆盖旧读者、新写者与恢复路径",
+        "listen_cue": "依次指向三个明确步骤。",
+        "check": "如同行质疑覆盖范围，记录待验证版本而非假造结果。",
+        "recovery": "真实系统版本、协议、样本和结果均未提供。",
+        "priority": "deepening",
+        "basis": "稿件内关注点与证据对应；实际听众尚未观察"
+      },
+      "next": {
+        "beat": "close",
+        "audience_shift": "让实际授权者明确下一步而非误以为已经决定上线。",
+        "question": "确认验证责任和下一次检查点，再决定是否重排交付",
+        "listen_cue": "逐角色核对拟确认动作；末尾重申不承诺新日期。",
+        "check": "请负责人复述不放行条件并确认或修正实际下一步。",
+        "recovery": "如不能确认责任或检查点，则记录未决，不虚构人名或承诺。",
+        "priority": "core",
+        "basis": "稿件内关注点与证据对应；实际听众尚未观察"
+      }
+    },
+    "short_route": {
+      "mode": "compressed",
+      "slide_ids": [
+        "decision",
+        "delta",
+        "controls",
+        "next"
+      ],
+      "minutes": 4.2,
+      "basis": "controls 已包含完整风险、验证及停止条件；跳过 mechanism 仍能从门禁转向责任与更新"
+    },
+    "qa": [
+      {
+        "question": "为什么不能按原计划全量？",
+        "response": "兼容性线索尚未验证；先核实覆盖、监测和回退",
+        "boundary": "没有真实生产数据，不能断言影响比例",
+        "slide_ids": [
+          "decision",
+          "controls"
+        ]
+      },
+      {
+        "question": "什么时候能给新日期？",
+        "response": "核对原目标、测试覆盖、实际授权后讨论",
+        "boundary": "不能预先承诺日期",
+        "slide_ids": [
+          "delta",
+          "next"
+        ]
+      }
+    ],
+    "rehearsal": {
+      "recall": {
+        "result": "pass",
+        "basis": "从标题串复述暂缓全量、验证、再议日期；关键限制可见"
+      },
+      "objection": {
+        "result": "pass",
+        "basis": "缺真实数据、回退和时间承诺有 Fallback"
+      },
+      "compression": {
+        "result": "pass",
+        "basis": "decision/delta/controls/next 保留门禁和请求；controls 转场明确支持跳过机制"
+      },
+      "synchrony": {
+        "result": "pass",
+        "basis": "Cue 指向对应表列/行，Interaction 只计划观察不假装听众已接受"
+      },
+      "action": {
+        "result": "pass",
+        "basis": "next 为拟确认责任与检查点，无生产批准"
+      }
+    }
+  }
+}

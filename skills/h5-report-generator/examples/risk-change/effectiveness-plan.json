@@ -1,0 +1,62 @@
+{
+  "profile": "communication-effectiveness",
+  "content_sha256": "52a1e170099cb4de6ee1ac3d7acbf20bd640ff12bcdfb28bdd73158fac2d9cd5",
+  "experience_sha256": "04aee6c33040464e4e7921b71f010e4a03a1c12ab60278aa81d7c3aba198055c",
+  "revision": 1,
+  "dimensions": {
+    "insight": {
+      "applicable": true,
+      "reason": "合成风险沟通示例",
+      "baseline": "未知；会前无真实观察",
+      "criterion": "能指出兼容性与回退是不同验证任务",
+      "method": "开放式复述",
+      "window": "会议结束前",
+      "owner": "拟由主持人记录",
+      "slide_ids": [
+        "controls"
+      ]
+    },
+    "understanding": {
+      "applicable": true,
+      "reason": "合成风险沟通示例",
+      "baseline": "未知；会前无真实观察",
+      "criterion": "准确复述不放行条件及日期未确认",
+      "method": "不看稿复述",
+      "window": "会议结束前",
+      "owner": "拟由主持人记录",
+      "slide_ids": [
+        "decision",
+        "controls",
+        "next"
+      ]
+    },
+    "credibility": {
+      "applicable": true,
+      "reason": "合成风险沟通示例",
+      "baseline": "未知；会前无真实观察",
+      "criterion": "对回退质疑明确证据缺口，不虚构结果",
+      "method": "记录异议及回应",
+      "window": "会议结束前",
+      "owner": "拟由主持人记录",
+      "slide_ids": [
+        "controls"
+      ]
+    },
+    "action": {
+      "applicable": true,
+      "reason": "合成风险沟通示例",
+      "baseline": "未知；会前无真实观察",
+      "criterion": "实际授权者确认或拒绝拟验证责任与更新点",
+      "method": "记录明确决定及未决",
+      "window": "会议结束前",
+      "owner": "拟由主持人记录",
+      "slide_ids": [
+        "next"
+      ]
+    },
+    "transfer": {
+      "applicable": false,
+      "reason": "本次目标是变更路径讨论，不是知识迁移培训"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "profile": "communication-effectiveness",
+  "plan_sha256": "547d5a3cf0f36ff69dd16b1c52bcf4fe1928a5c2dc40173b950e9a426a0d9878",
+  "mode": "rehearsal",
+  "records": [
+    {
+      "dimension": "understanding",
+      "result": "partial",
+      "observed_at": "2026-11-27",
+      "source": "合成演练示例（非真实听众）",
+      "observation": "模拟复述遗漏日期未确认这一限定",
+      "limitations": "仅用于演示记录格式，不代表实际演练或真人反馈"
+    }
+  ]
+}

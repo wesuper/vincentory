@@ -1,4 +1,4 @@
-# H5 演示质量门禁（V2.1）
+# H5 演示质量门禁
 
 ## 预检：先验内容，再排版
 先检查源稿逐页质量记录（content_quality）、听众任务、事实/假设、证据、边界。问：删掉本页会损失什么？如果只有口号、空泛背景、标题复读、泛用三点且无具体支撑，不能靠美化交差。联用回传 slide_id/缺口/建议补证或合并；独立使用在本 Skill 内澄清、精炼并经授权更新源、revision/hash/逐页评审。不能凭空补案例、数字、阈值。已有稿可原样预览，明确不足和未评审状态。旧契约解析兼容，不自动晋级。
@@ -13,3 +13,10 @@
 ## 验收与回传
 render-review.json 的 `content_quality` 记录上游/独立评审状态；`page_reviews` 以 slide_id 为键，逐页记录：
 `substance`、`visual_fit`、`concise_visible`、`notes_detail`、`hierarchy_spacing`、`navigation` 各为 pass / revise / not_tested，附 `basis`（具体观察及有意留白理由）。全量通过才可正式验收；未实测画面不得填 pass。若有稀疏/拥挤/错误图示/复述，标 revise 并记录页号、具体问题、拟修订；结构脚本不是主观设计或说服力证明。复杂图表人工核对真实数据映射与限定，静态保真不足以证明视觉正确。真实听众评价另行验证。
+
+
+## 听众同步与核心路线
+在 content_quality/page_reviews 基础上，复杂稿逐页增加 `synchrony`、`continuity`（pass/revise/not_tested）与具体 basis；启用扩展时必须核对 experience_quality=reviewed，并增加 `core_route`（pass/revise/not_tested）。基础稿无扩展时 core_route 不适用；逐页验证口播和视觉关注对应，跨页图例和位置合理，核心路线保留必要事实、风险与行动。见 audience-synchrony。格式或字段检查不替代人工/实际浏览器审查；实际听众的理解和行动只能现场记录。
+
+## 投屏尺度与强调
+正文使用 `--fs-body`（通常不低于14px），不要用缩小字号解决溢出；优先重新组织、增大有效可读区域，必要时在源端获授权拆页。封面、标题、卡片标题、表格与指标分别使用 `--fs-cover`、`--fs-h1`、`--fs-h2`、`--fs-small`、`--fs-number`。每页通常3–7个关键要点、0–2个主要视觉组，仅作认知密度参考，不机械凑数量。背景使用 `var(--paper)` 和 `var(--slide-bg)`，避免高对比渐变切换闪烁。`.chip.warn`/`.risk-high` 表风险，`.chip.gold`/`.risk-mh` 表待定，`.chip.ok`/`.risk-low` 表完成或低风险；颜色辅以清楚文字，同页避免过多高风险强调。不要凭颜色推断未提供的风险级别。

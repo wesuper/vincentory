@@ -1,0 +1,63 @@
+{
+  "main_claim": {
+    "text": "兼容性与回退未验证时建议暂缓全量并确认验证路径",
+    "status": "recommendation"
+  },
+  "claims": [
+    {
+      "id": "C-1",
+      "text": "建议暂缓全量切换，先验证旧消费者兼容性",
+      "status": "recommendation",
+      "slides": [
+        "decision"
+      ],
+      "evidence_ids": [
+        "E-001"
+      ]
+    },
+    {
+      "id": "C-2",
+      "text": "原全量目标已存在兼容性疑点，新日期尚不能确定",
+      "status": "recommendation",
+      "slides": [
+        "delta"
+      ],
+      "evidence_ids": [
+        "E-002"
+      ]
+    },
+    {
+      "id": "C-3",
+      "text": "验证兼容性和回退能力之前，不扩大暴露",
+      "status": "recommendation",
+      "slides": [
+        "controls"
+      ],
+      "evidence_ids": [
+        "E-003"
+      ]
+    },
+    {
+      "id": "C-4",
+      "text": "兼容性验证要同时覆盖旧读者、新写者与恢复路径",
+      "status": "recommendation",
+      "slides": [
+        "mechanism"
+      ],
+      "evidence_ids": [
+        "E-004"
+      ]
+    },
+    {
+      "id": "C-5",
+      "text": "确认验证责任和下一次检查点，再决定是否重排交付",
+      "status": "recommendation",
+      "slides": [
+        "next"
+      ],
+      "evidence_ids": [
+        "E-005"
+      ]
+    }
+  ]
+}

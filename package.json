@@ -10,7 +10,7 @@
   "license": "MIT",
   "scripts": {
     "validate": "bash scripts/validate-plugin.sh",
-    "validate:skill": "cd skills/h5-report-generator && python3 scripts/validate_deck.py templates/h5-report-template.html --target-minutes 15 && python3 scripts/theme_contrast.py .",
-    "test:skill": "cd skills/h5-report-generator && python3 scripts/sync-template.py . && python3 scripts/validate_deck.py templates/h5-report-template.html --target-minutes 15"
+    "validate:skill": "cd skills/h5-report-generator && python3 scripts/validate_deck.py assets/h5-report-template.html --target-minutes 15 && python3 scripts/theme_contrast.py .",
+    "test:skill": "cd skills/h5-report-generator && python3 scripts/sync-template.py . && python3 scripts/validate_deck.py assets/h5-report-template.html --target-minutes 15"
   }
 }

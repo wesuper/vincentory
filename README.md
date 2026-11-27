@@ -83,7 +83,7 @@ npm run validate
 
 # 校验 skill 自身的模板与主题（不必生成一份 deck）
 npm run validate:skill   # 结构契约 + 备注契约 + 四主题对比度
-npm run test:skill       # 先按 deck/ 重新生成单文件示例，再校验
+npm run test:skill       # 先按 assets/deck/ 重新生成单文件示例，再校验
 ```
 
 If the `claude` command is unavailable or the subcommand is unsupported, record the error. Do not skip publishing invariants checks manually.

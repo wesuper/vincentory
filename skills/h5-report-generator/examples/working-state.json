@@ -1,6 +1,6 @@
 {
   "stage": "READY",
-  "revision": 2,
+  "revision": 1,
   "confirmed": {
     "audience": "业务负责人（主受众）、售前与技术同行",
     "objective": "对齐售前知识答复试点的任务、测量与退出条件（合成示例）",
@@ -17,8 +17,8 @@
   "open_questions": [],
   "decision_log": [
     {
-      "revision": 2,
-      "change": "以具体售前任务与拟议验收矩阵取代泛泛描述；保留无真实数据边界"
+      "revision": 1,
+      "change": "构建合成示例的内容、证据及交接记录"
     }
   ],
   "slide_maturity": {
@@ -57,10 +57,10 @@
     },
     "handoff": {
       "result": "pass",
-      "basis": "已按 1.1 契约维护六文件，含逐页质量记录"
+      "basis": "六文件与逐页质量记录完整"
     }
   },
-  "quality_profile": "presentation-v2.1",
+  "quality_profile": "slide-review",
   "slide_quality": {
     "problem": {
       "result": "pass",

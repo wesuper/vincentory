@@ -13,6 +13,10 @@
 | action | 行动型结尾明确请求/责任/时间/验收（未知则作为拟确认事项）；分享型给可应用收获 | 改成明确的下一步或知识应用，而非空泛谢谢 |
 | handoff | 六文件一致，渲染器无需重写论证；限制、证据、时长、ID 不丢 | 运行校验并修订源文件 |
 
-新增 V2.1 逐页门禁见 [slide-quality](slide-quality.md)：信息增量、具体支撑、适用视觉、精炼正文、独立口述、关键边界可见。每页 `slide_quality.result=pass` 且具备具体依据才 READY；不是以字数、卡片数或图表比例代替质量。
+逐页门禁见 [slide-quality](slide-quality.md)：信息增量、具体支撑、适用视觉、精炼正文、独立口述、关键边界可见。每页 `slide_quality.result=pass` 且具备具体依据才 READY；不是以字数、卡片数或图表比例代替质量。
 
 READY 只指内容可进入正式渲染，不表示已验证 HTML、用户已批准公开发布或真实听众认可。review 的 pass 是基于已有材料的自检/角色模拟，不能假冒真人确认。需要实际审批/敏感披露授权的内容未获确认应 blocked/needs_review。
+
+
+## 听众旅程扩展门禁
+原逐页门禁仍必须通过。启用听众旅程扩展时增加工作态 `experience`：真实受众任务、开场价值/张力、结果观察方式、选定场景检查、逐页认知旅程、核心压缩路线、可定位的问答、五项预演。参见 experience-contract、technical-scenarios、rehearsal-playbook。没有真实反馈只能写拟观察信号，不能填实际成功率。READY 不意味着能说服听众或已获得批准。
