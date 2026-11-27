@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-11-27
+
+内容与渲染之间的契约升到 1.1，并补上真正可执行的渲染链路：内容 Skill 产出可封存、可核查的六件套，H5 Skill 消费它并给出机器与人工两层验收。旧 1.0 稿仍可读。
+
+### Added
+
+- **内容契约 1.1**（`presentation-contract.md` + `handoff.schema.json`）：新增 `revision`、`content_sha256`（由 `--seal` 写入）、`intent` 六字段与每页 `chapter`；`speaker_notes_present` 收紧为必须为 `true`，`slide_id` 加 kebab-case 模式校验。仍兼容 1.0，旧稿不自动升级。
+- **逐页内容质量记录**（`quality_profile: presentation-v2.1` + `slide_quality`）：每页记录 `audience_question` / `information_gain` / `support` / `visual_reason` / `notes_gain` / `basis`，READY 前必须全部 `pass`。缺记录时质量状态为 `not_reviewed`，仍可预览但不许正式交付。
+- `presentation-content-architect` 新增 `audience-playbook`（按听众在场任务反推主线）、`slide-quality`（逐页信息增量门禁）、`evaluation`（维护期行为评估）三个参考文档。
+- `h5-report-generator` 新增可运行渲染链路：`prepare_render.py`（解析真源、校验、产出 `render-input.json`）→ `render_reference.py`（基础卡片/流程/表格/列表）→ `verify_render.py`（文字保真、页序、备注与源哈希比对），并以 `test_pipeline.py` 覆盖。
+- `h5-report-generator` 独立携带契约所需副本：`scripts/content_contract.py`、`schemas/handoff.schema.json`、`references/presentation-content-contract.md`，以及 `examples/` 六文件测试夹具，使其可单独安装。
+- `h5-report-generator` 新增 `visual-routing`（视觉语义→组件）、`presentation-quality`（预检与逐页验收）、`render-workflow`（装配、披露与浏览器门禁）、`legacy-rendering-guide`（原 v6 详细操作档案）、`evaluation`。
+- `validate_deck.py` 新增 `--profile standard|adaptive`（默认 `standard`）、`--legacy-js-notes`，并校验重复 `data-slide-id`。
+- 新增 `skills/README.md`：目录约定、frontmatter 契约、独立与组合规则、增删改 Skill 的流程。
+- 新增 `test_contract_parity.py`：两份 Skill 各自持有的共享契约、schema、解析器与示例夹具逐字节比对；同时安装时漂移即失败，单独安装时跳过。
+
+### Changed
+
+- `presentation-content-architect` 按 skill 最佳实践重构：description 改为触发条件，正文改为六步任务清单、明确的提问/跳过规则、机器可判定的 READY 门禁与压力下误判对照表；删除重复的 `references/content-contract.md`。
+- `validate_content.py` 增加状态枚举、三处进度一致性、每页 `Minutes:` 完整性、Evidence 非空、READY 门禁字段与逐页质量检查，并附回归测试；`--seal` 拒绝在内容变更后直接覆盖哈希。
+- `h5-report-generator` 的 `SKILL.md` 从 483 行收敛到入口式篇幅（触发、边界、五步流程、参考索引），详细操作归入 `references/legacy-rendering-guide.md`。
+- `validate_deck.py` 改为按 profile 判定：`standard` 保持「最少 5 页、必须有目录结论卡、封面 2–3 个结论胶囊」，`adaptive` 不再对短稿报错。命令行默认仍是 `standard`（对既有产物最严格）；契约里 `adapter.profile` 的默认值是 `adaptive`，两者不一致时以显式传入为准。`talk` 条数不在 2–4 之间、单条超 40 字由警告升级为错误；`minutes` 增加有限数校验；`--target-minutes` 改为浮点并校验正有限。
+- 右下导航改为共享透明平面样式：去掉胶囊底色与阴影，小字号页码、悬停/聚焦增强，`pointer: coarse` 下按钮放大到 44px 以满足触屏可操作性。
+- 稀疏页不再用 `margin: auto` 把证据区垂直居中：短表格与单行证据改为紧邻结论，避免标题与证据在 1080p 下相隔半屏。
+- 模板示例与 `page-templates.md` 的 `SPEAKER_NOTES` 改为合法 JSON，并说明可选 `--legacy-js-notes` 只用于可信旧样例。
+- `scripts/generate.py` 文件模式由 `755` 归一为 `644`，与其他脚本及 `python3 <script>` 的调用方式一致。
+
+### Fixed
+
+- `render_visible` 在表格与普通文字混排时整段丢弃表格：改为按行分块，表格连续行渲染成表、其余仍走散文渲染，保留源顺序。
+- 导航容器 `opacity: 0.6` 把文字与背景一起压暗，四个主题下 `--text-muted` 实测从 5.2:1 掉到 2.4:1，低于 WCAG AA；改为只靠字号与颜色降低存在感。
+- `sync-template.py` 的备注守卫只匹配 JS 字面量 `id: '...'`，改为兼容两种引号并限定在 `SPEAKER_NOTES` 数组内，避免误抓页面里同名键。
+- `--seal` 可被「删除 `content_sha256` 后重新封存」绕过「内容变更必须递增 revision」的约束；改为删除哈希在 `revision > 1` 时直接报错。
+- `parse_notes` 默认只接受合法 JSON，JS 字面量需显式 `--legacy-js-notes`；随仓库发布的模板与文档示例均已改为 JSON。
+
 ## [0.4.2] - 2026-11-26
 
 ### Added
